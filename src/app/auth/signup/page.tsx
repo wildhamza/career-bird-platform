@@ -177,9 +177,14 @@ function SignupForm() {
     
     try {
       console.log("Submitting form...", { email, role: userType });
+
+      // Sanitize user input to avoid validation issues with stray spaces
+      const cleanEmail = email.trim();
+      const cleanPassword = password.trim();
+      const cleanName = ""; // No full name field present, keep placeholder for future use
       
-      const emailValid = validateEmail(email);
-      const passwordValid = validatePassword(password);
+      const emailValid = validateEmail(cleanEmail);
+      const passwordValid = validatePassword(cleanPassword);
       
       if (!emailValid || !passwordValid) {
         return;
@@ -213,11 +218,12 @@ function SignupForm() {
 
       // Sign up the user
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: cleanEmail,
+        password: cleanPassword,
         options: {
           data: {
             role: userType,
+            full_name: cleanName || undefined,
           },
         },
       });
