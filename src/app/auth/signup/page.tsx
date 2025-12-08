@@ -98,6 +98,8 @@ function SignupForm() {
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
   const [showErrorToast, setShowErrorToast] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -170,12 +172,81 @@ function SignupForm() {
   const isPasswordValid = password.length > 0 && passwordError === "";
   const isFormValid = isEmailValid && isPasswordValid;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const emailValid = validateEmail(email);
-    const passwordValid = validatePassword(password);
     
-    if (emailValid && passwordValid) {
+    try {
+      console.log("Submitting form...", { email, role: userType });
+      
+      const emailValid = validateEmail(email);
+      const passwordValid = validatePassword(password);
+      
+      if (!emailValid || !passwordValid) {
+        return;
+      }
+
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setShowErrorToast(false);
+
+      // Check if Supabase is configured
+      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+        const errorMsg = "System Error: Database connection failed.";
+        setSubmitError(errorMsg);
+        setShowErrorToast(true);
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
+      const supabase = createClient();
+      
+      // Validate supabase client
+      if (!supabase) {
+        const errorMsg = "System Error: Database connection failed.";
+        setSubmitError(errorMsg);
+        setShowErrorToast(true);
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Sign up the user
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: userType,
+          },
+        },
+      });
+
+      if (error) {
+        const errorMsg = error.message || "Something went wrong";
+        console.error("Signup error:", error);
+        setSubmitError(errorMsg);
+        setShowErrorToast(true);
+        alert(errorMsg);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // If signup successful, create profile entry
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert({
+            user_id: data.user.id,
+            role: userType,
+          });
+
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+          // Don't fail the signup if profile creation fails, but log it
+        }
+      }
+
       // Check for redirect parameter from middleware
       const redirectPath = searchParams?.get("redirect");
       
@@ -196,6 +267,13 @@ function SignupForm() {
         const dashboardPath = userType === "professor" ? "/dashboard/professor" : "/dashboard/student";
         router.push(dashboardPath);
       }
+    } catch (error: any) {
+      console.error("Signup exception:", error);
+      const errorMsg = error?.message || "Something went wrong";
+      setSubmitError(errorMsg);
+      setShowErrorToast(true);
+      alert(errorMsg);
+      setIsSubmitting(false);
     }
   };
 
@@ -363,13 +441,20 @@ function SignupForm() {
 
               {/* Error Toast */}
               <ErrorToast
-                message={googleError || "An error occurred"}
+                message={googleError || submitError || "An error occurred"}
                 isVisible={showErrorToast}
                 onClose={() => {
                   setShowErrorToast(false);
                   setGoogleError(null);
+                  setSubmitError(null);
                 }}
               />
+              
+              {submitError && (
+                <div className="mt-4 bg-red-500/20 border border-red-500/30 text-red-400 text-sm p-3 rounded-lg">
+                  {submitError}
+                </div>
+              )}
 
               {/* Divider */}
               <div className="relative">
@@ -442,17 +527,17 @@ function SignupForm() {
                 </div>
                 <button
                   type="submit"
-                  disabled={!isFormValid}
+                  disabled={!isFormValid || isSubmitting}
                   className={cn(
                     "w-full rounded-md border border-teal-500 bg-teal-500/10 px-4 py-3",
                     "text-base font-semibold text-teal-400 transition-all",
                     "focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-[#0B0F19]",
-                    isFormValid
+                    isFormValid && !isSubmitting
                       ? "hover:bg-teal-500/20 hover:shadow-[0_0_20px_rgba(0,128,128,0.5)] cursor-pointer"
                       : "opacity-50 cursor-not-allowed"
                   )}
                 >
-                  Create Account
+                  {isSubmitting ? "Creating Account..." : "Create Account"}
                 </button>
               </form>
               <div className="mt-6 text-center">
