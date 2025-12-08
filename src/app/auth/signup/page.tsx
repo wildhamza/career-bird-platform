@@ -182,8 +182,14 @@ function SignupForm() {
       const cleanEmail = email.trim();
       const cleanPassword = password.trim();
       const cleanName = ""; // No full name field present, keep placeholder for future use
+
+      // Nuclear sanitize: strip quotes and spaces to avoid email_address_invalid
+      const nuclearEmail = email.replace(/['"\s]/g, "");
+
+      console.log("Original:", email);
+      console.log("Nuclear Cleaned:", nuclearEmail);
       
-      const emailValid = validateEmail(cleanEmail);
+      const emailValid = validateEmail(nuclearEmail);
       const passwordValid = validatePassword(cleanPassword);
       
       if (!emailValid || !passwordValid) {
@@ -218,7 +224,7 @@ function SignupForm() {
 
       // Sign up the user
       const { data, error } = await supabase.auth.signUp({
-        email: cleanEmail,
+        email: nuclearEmail,
         password: cleanPassword,
         options: {
           data: {
