@@ -11,7 +11,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { SearchIcon, BookmarkIcon, ArrowRightIcon, CalendarIcon, Filter, X, ChevronLeft, ChevronRight, Loader2, Sparkles } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { StudentNav } from "@/components/layout/student-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 import { motion, AnimatePresence } from "framer-motion"
@@ -270,7 +269,6 @@ export function ScholarshipsPageClient({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 dark:from-blue-950/10 dark:via-background dark:to-indigo-950/10">
-      <StudentNav />
 
       {/* Hero Section */}
       <div className="relative overflow-hidden border-b bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/50 dark:from-blue-950/10 dark:via-background dark:to-indigo-950/10">
@@ -287,11 +285,11 @@ export function ScholarshipsPageClient({
           <FadeIn>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <Link href="/" className="hover:text-foreground transition-colors">
-                Home
-              </Link>
-              <span>/</span>
+              Home
+            </Link>
+            <span>/</span>
               <span className="text-foreground font-medium">Scholarships</span>
-            </div>
+          </div>
           </FadeIn>
 
           <FadeIn delay={0.1}>
@@ -321,13 +319,13 @@ export function ScholarshipsPageClient({
                 transition={{ duration: 0.3 }}
                 className={`${showFilters ? "block" : "hidden"} lg:block space-y-6`}
               >
-                {/* Mobile filter header */}
-                <div className="lg:hidden flex items-center justify-between mb-4 pb-4 border-b">
+            {/* Mobile filter header */}
+            <div className="lg:hidden flex items-center justify-between mb-4 pb-4 border-b">
                   <h3 className="font-semibold text-lg">Filters</h3>
-                  <Button variant="ghost" size="icon" onClick={() => setShowFilters(false)}>
+              <Button variant="ghost" size="icon" onClick={() => setShowFilters(false)}>
                     <X className="h-5 w-5" />
-                  </Button>
-                </div>
+              </Button>
+            </div>
 
                 <FadeIn>
                   <Card className="border-2 shadow-sm hover:shadow-md transition-shadow">
@@ -406,8 +404,8 @@ export function ScholarshipsPageClient({
                     ))}
                   </div>
                 </div>
-                    </CardContent>
-                  </Card>
+              </CardContent>
+            </Card>
                 </FadeIn>
               </motion.div>
             )}
@@ -417,55 +415,55 @@ export function ScholarshipsPageClient({
           <div className="space-y-6">
             {/* Search and Filter Toggle */}
             <FadeIn delay={0.2}>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <div className="relative flex-1">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="relative flex-1">
                   <SearchIcon className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search scholarships by title, university, or country..."
+                <Input
+                  placeholder="Search scholarships by title, university, or country..."
                     className="pl-12 h-12 text-base border-2 focus:border-blue-500 transition-colors"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <Button
-                  variant="outline"
-                  size="lg"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="lg"
                   className="lg:hidden h-12 border-2"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filters
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
                   {(filters.degreeLevels.length + filters.countries.length + filters.fields.length) > 0 && (
                     <Badge className="ml-2 bg-blue-600 text-white">
                       {filters.degreeLevels.length + filters.countries.length + filters.fields.length}
                     </Badge>
                   )}
-                </Button>
-              </div>
+              </Button>
+            </div>
             </FadeIn>
 
             {/* Results Header */}
             <FadeIn delay={0.3}>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-lg bg-muted/50 border">
-                <div>
+              <div>
                   <p className="text-sm font-medium">
                     Showing <span className="text-blue-600 font-bold">{startIndex + 1}-{Math.min(endIndex, filteredGrants.length)}</span> of{" "}
                     <span className="text-blue-600 font-bold">{filteredGrants.length}</span> 
-                    {searchQuery || filters.degreeLevels.length > 0 || filters.countries.length > 0 || filters.fields.length > 0
-                      ? " filtered" 
-                      : grants.length < totalCount 
-                      ? " loaded" 
-                      : ""} Scholarships
-                    {grants.length < totalCount && (
+                  {searchQuery || filters.degreeLevels.length > 0 || filters.countries.length > 0 || filters.fields.length > 0
+                    ? " filtered" 
+                    : grants.length < totalCount 
+                    ? " loaded" 
+                    : ""} Scholarships
+                  {grants.length < totalCount && (
                       <span className="ml-1 text-muted-foreground">
-                        ({totalCount} total in database)
-                      </span>
-                    )}
-                  </p>
+                      ({totalCount} total in database)
+                    </span>
+                  )}
+                </p>
                 {(filters.degreeLevels.length > 0 || filters.countries.length > 0 || filters.fields.length > 0) && (
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
                       <span className="text-xs text-muted-foreground font-medium">Active filters:</span>
-                      {filters.degreeLevels.map((level) => (
+                    {filters.degreeLevels.map((level) => (
                         <motion.div
                           key={level}
                           initial={{ scale: 0 }}
@@ -473,17 +471,17 @@ export function ScholarshipsPageClient({
                           exit={{ scale: 0 }}
                         >
                           <Badge variant="secondary" className="bg-blue-600 text-white border-0 capitalize hover:bg-blue-700 cursor-pointer">
-                            {level}
-                            <button
+                        {level}
+                        <button
                               className="ml-2 hover:bg-blue-800 rounded-full px-1.5 transition-colors"
-                              onClick={() => toggleFilter("degreeLevels", level)}
-                            >
-                              ×
-                            </button>
-                          </Badge>
+                          onClick={() => toggleFilter("degreeLevels", level)}
+                        >
+                          ×
+                        </button>
+                      </Badge>
                         </motion.div>
-                      ))}
-                      {filters.countries.map((country) => (
+                    ))}
+                    {filters.countries.map((country) => (
                         <motion.div
                           key={country}
                           initial={{ scale: 0 }}
@@ -491,17 +489,17 @@ export function ScholarshipsPageClient({
                           exit={{ scale: 0 }}
                         >
                           <Badge variant="secondary" className="bg-green-600 text-white border-0 hover:bg-green-700 cursor-pointer">
-                            {country}
-                            <button
+                        {country}
+                        <button
                               className="ml-2 hover:bg-green-800 rounded-full px-1.5 transition-colors"
-                              onClick={() => toggleFilter("countries", country)}
-                            >
-                              ×
-                            </button>
-                          </Badge>
+                          onClick={() => toggleFilter("countries", country)}
+                        >
+                          ×
+                        </button>
+                      </Badge>
                         </motion.div>
-                      ))}
-                      {filters.fields.map((field) => (
+                    ))}
+                    {filters.fields.map((field) => (
                         <motion.div
                           key={field}
                           initial={{ scale: 0 }}
@@ -509,35 +507,35 @@ export function ScholarshipsPageClient({
                           exit={{ scale: 0 }}
                         >
                           <Badge variant="secondary" className="bg-purple-600 text-white border-0 hover:bg-purple-700 cursor-pointer">
-                            {field}
-                            <button
+                        {field}
+                        <button
                               className="ml-2 hover:bg-purple-800 rounded-full px-1.5 transition-colors"
-                              onClick={() => toggleFilter("fields", field)}
-                            >
-                              ×
-                            </button>
-                          </Badge>
+                          onClick={() => toggleFilter("fields", field)}
+                        >
+                          ×
+                        </button>
+                      </Badge>
                         </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
+            </div>
             </FadeIn>
 
             {/* Scholarship Cards */}
             {filteredGrants.length === 0 ? (
               <FadeIn>
                 <Card className="border-2">
-                  <CardContent className="p-12 text-center">
+                <CardContent className="p-12 text-center">
                     <h3 className="text-xl font-semibold mb-2">No scholarships found</h3>
                     <p className="text-muted-foreground mb-6">Try adjusting your filters or search terms</p>
                     <Button variant="outline" onClick={clearFilters} size="lg">
                       <X className="mr-2 h-4 w-4" />
                       Clear All Filters
-                    </Button>
-                  </CardContent>
-                </Card>
+                  </Button>
+                </CardContent>
+              </Card>
               </FadeIn>
             ) : (
               <StaggerContainer className="space-y-4">
@@ -563,15 +561,15 @@ export function ScholarshipsPageClient({
                           <div className="relative">
                             <div className="absolute inset-0 bg-blue-600 rounded-xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
                             <div className="relative h-16 w-16 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex-shrink-0 flex items-center justify-center shadow-lg">
-                              {grant.universities?.logo_url ? (
-                                <img
-                                  src={grant.universities.logo_url}
-                                  alt={grant.universities.name}
+                            {grant.universities?.logo_url ? (
+                              <img
+                                src={grant.universities.logo_url}
+                                alt={grant.universities.name}
                                   className="h-full w-full object-cover rounded-xl"
-                                />
-                              ) : (
-                                <span className="text-white text-xs font-bold">{universityInitials}</span>
-                              )}
+                              />
+                            ) : (
+                              <span className="text-white text-xs font-bold">{universityInitials}</span>
+                            )}
                             </div>
                           </div>
 
@@ -590,16 +588,16 @@ export function ScholarshipsPageClient({
                                 </h3>
                               </div>
                               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                   className="flex-shrink-0 h-10 w-10 rounded-full hover:bg-blue-50 dark:hover:bg-blue-950"
-                                  onClick={() => handleBookmark(grant.id)}
-                                >
-                                  <BookmarkIcon
+                                onClick={() => handleBookmark(grant.id)}
+                              >
+                                <BookmarkIcon
                                     className={`h-5 w-5 transition-all ${isSaved ? "fill-blue-600 text-blue-600 scale-110" : "text-muted-foreground"}`}
-                                  />
-                                </Button>
+                                />
+                              </Button>
                               </motion.div>
                             </div>
 
@@ -650,17 +648,17 @@ export function ScholarshipsPageClient({
                               </div>
                               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                 <Button asChild size="sm" className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-md">
-                                  <Link href={`/scholarships/${grant.id}`}>
-                                    View Details
+                                <Link href={`/scholarships/${grant.id}`}>
+                                  View Details
                                     <ArrowRightIcon className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                  </Link>
-                                </Button>
+                                </Link>
+                              </Button>
                               </motion.div>
                             </div>
                           </div>
                         </div>
-                          </CardContent>
-                        </Card>
+                      </CardContent>
+                    </Card>
                       </motion.div>
                     </StaggerItem>
                   )
@@ -673,87 +671,87 @@ export function ScholarshipsPageClient({
               <FadeIn>
                 <div className="flex items-center justify-center gap-2 mt-8 p-4 rounded-lg bg-muted/50 border-2">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button
-                      variant="outline"
+                <Button
+                  variant="outline"
                       size="default"
-                      onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                      disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
                       className="font-medium"
-                    >
-                      <ChevronLeft className="h-4 w-4 mr-1" />
-                      Previous
-                    </Button>
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
                   </motion.div>
-                  
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1)
-                      .filter(page => {
-                        // Show first page, last page, current page, and pages around current
-                        if (page === 1 || page === totalPages) return true
-                        if (Math.abs(page - currentPage) <= 1) return true
-                        return false
-                      })
-                      .map((page, index, array) => (
-                        <div key={page} className="flex items-center">
-                          {index > 0 && array[index - 1] !== page - 1 && (
+                
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(page => {
+                      // Show first page, last page, current page, and pages around current
+                      if (page === 1 || page === totalPages) return true
+                      if (Math.abs(page - currentPage) <= 1) return true
+                      return false
+                    })
+                    .map((page, index, array) => (
+                      <div key={page} className="flex items-center">
+                        {index > 0 && array[index - 1] !== page - 1 && (
                             <span className="px-2 text-muted-foreground font-bold">...</span>
-                          )}
+                        )}
                           <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                            <Button
-                              variant={currentPage === page ? "default" : "outline"}
+                        <Button
+                          variant={currentPage === page ? "default" : "outline"}
                               size="default"
-                              onClick={() => setCurrentPage(page)}
+                          onClick={() => setCurrentPage(page)}
                               className={`min-w-[2.5rem] font-semibold ${currentPage === page ? "bg-blue-600 hover:bg-blue-700" : ""}`}
-                            >
-                              {page}
-                            </Button>
+                        >
+                          {page}
+                        </Button>
                           </motion.div>
-                        </div>
-                      ))}
-                  </div>
+                      </div>
+                    ))}
+                </div>
 
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button
-                      variant="outline"
+                <Button
+                  variant="outline"
                       size="default"
-                      onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                      disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
                       className="font-medium"
-                    >
-                      Next
-                      <ChevronRight className="h-4 w-4 ml-1" />
-                    </Button>
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
                   </motion.div>
-                </div>
+              </div>
               </FadeIn>
             )}
 
             {/* Load More Button */}
             {hasMore && !searchQuery && filters.degreeLevels.length === 0 && filters.countries.length === 0 && filters.fields.length === 0 && (
               <FadeIn>
-                <div className="flex justify-center mt-8">
+              <div className="flex justify-center mt-8">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button 
-                      onClick={loadMore} 
-                      disabled={isLoadingMore}
-                      variant="outline"
-                      size="lg"
+                <Button 
+                  onClick={loadMore} 
+                  disabled={isLoadingMore}
+                  variant="outline"
+                  size="lg"
                       className="min-w-[240px] h-12 border-2 font-semibold text-base"
-                    >
-                      {isLoadingMore ? (
-                        <>
+                >
+                  {isLoadingMore ? (
+                    <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                           Loading More...
-                        </>
-                      ) : (
+                    </>
+                  ) : (
                         <>
                           <Sparkles className="mr-2 h-5 w-5" />
                           Load More Scholarships
                         </>
-                      )}
-                    </Button>
+                  )}
+                </Button>
                   </motion.div>
-                </div>
+              </div>
               </FadeIn>
             )}
             

@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Users, Search, Award, CheckCircle, TrendingUp, Globe, Clock, Shield } from "lucide-react"
-import { MarketingNav } from "@/components/layout/marketing-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 import { ScaleIn } from "@/components/animations/scale-in"
@@ -10,7 +9,6 @@ import { ScaleIn } from "@/components/animations/scale-in"
 export default function ForProfessorsPage() {
   return (
     <div className="min-h-screen bg-background">
-      <MarketingNav />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
@@ -28,29 +26,29 @@ export default function ForProfessorsPage() {
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mx-auto max-w-3xl text-center">
             <FadeIn delay={0.1}>
-              <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-                Find Exceptional{" "}
-                <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
-                  Research Talent
-                </span>
-              </h1>
+            <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Find Exceptional{" "}
+              <span className="bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                Research Talent
+              </span>
+            </h1>
             </FadeIn>
 
             <FadeIn delay={0.2}>
-              <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
+            <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
                 Connect with pre-vetted, high-potential graduate students from around the world. Build your dream research team with qualified candidates ready to contribute to cutting-edge research.
-              </p>
+            </p>
             </FadeIn>
 
             <FadeIn delay={0.3}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Button size="lg" asChild className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700">
-                  <Link href="/signup">Post a Position</Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/contact">Schedule a Demo</Link>
-                </Button>
-              </div>
+                <Link href="/signup">Post a Position</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/contact">Schedule a Demo</Link>
+              </Button>
+            </div>
             </FadeIn>
           </div>
         </div>
@@ -60,11 +58,11 @@ export default function ForProfessorsPage() {
       <section className="py-20 md:py-32 bg-muted/30">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn>
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                Build Your Dream Research Team
-              </h2>
-              <p className="text-lg text-muted-foreground">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+              Build Your Dream Research Team
+            </h2>
+            <p className="text-lg text-muted-foreground">
                 Save time and find the perfect candidates for your research positions with our comprehensive platform
               </p>
             </div>
@@ -91,8 +89,8 @@ export default function ForProfessorsPage() {
                 <h3 className="mb-3 text-xl font-bold">Pre-Vetted Candidates</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   Every candidate profile includes verified academic records, test scores, research experience, and publications. Save time on initial screening and focus on the best matches.
-                </p>
-              </div>
+              </p>
+            </div>
             </StaggerItem>
 
             <StaggerItem>
@@ -102,7 +100,7 @@ export default function ForProfessorsPage() {
                 </div>
                 <h3 className="mb-3 text-xl font-bold">Global Talent Pool</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Access talented students from 140+ countries actively seeking research opportunities. Expand your lab's diversity and bring in fresh perspectives from around the world.
+                  Access talented students from around the world actively seeking research opportunities. Expand your lab's diversity and bring in fresh perspectives from across the globe.
                 </p>
               </div>
             </StaggerItem>
@@ -132,7 +130,7 @@ export default function ForProfessorsPage() {
                     <div>
                       <h3 className="font-semibold mb-1">Save Time on Recruitment</h3>
                       <p className="text-muted-foreground">
-                        Reduce screening time by 70% with pre-qualified candidates and smart filters
+                        Pre-qualified candidates and smart filters streamline your recruitment process
                       </p>
                     </div>
                   </div>
@@ -157,10 +155,10 @@ export default function ForProfessorsPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-1">Manage Applications Efficiently</h3>
-                      <p className="text-muted-foreground">
+              <p className="text-muted-foreground">
                         Track, organize, and respond to applications all in one centralized dashboard
-                      </p>
-                    </div>
+              </p>
+            </div>
                   </div>
                 </div>
               </div>
@@ -169,30 +167,10 @@ export default function ForProfessorsPage() {
             <ScaleIn delay={0.2}>
               <Card className="border-2 shadow-xl">
                 <CardContent className="p-8">
-                  <div className="space-y-6">
-                    <div className="text-center pb-6 border-b">
-                      <h3 className="text-2xl font-bold mb-2">Platform Statistics</h3>
-                      <p className="text-muted-foreground">Real impact for research labs worldwide</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-orange-600 mb-2">5,000+</div>
-                        <div className="text-sm text-muted-foreground">Qualified Candidates</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-orange-600 mb-2">300+</div>
-                        <div className="text-sm text-muted-foreground">Active Professors</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-orange-600 mb-2">95%</div>
-                        <div className="text-sm text-muted-foreground">Satisfaction Rate</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-4xl font-bold text-orange-600 mb-2">50+</div>
-                        <div className="text-sm text-muted-foreground">Countries</div>
-                      </div>
-                    </div>
-                  </div>
+                  <h3 className="text-2xl font-bold mb-4">Global Reach</h3>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    Connect with talented candidates from around the world who are actively seeking research opportunities. Our platform brings together qualified students and leading researchers to facilitate meaningful academic collaborations.
+                  </p>
                 </CardContent>
               </Card>
             </ScaleIn>
@@ -204,11 +182,11 @@ export default function ForProfessorsPage() {
       <section className="py-20 md:py-32 bg-muted/30">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn>
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                How It Works
-              </h2>
-              <p className="text-lg text-muted-foreground">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+              How It Works
+            </h2>
+            <p className="text-lg text-muted-foreground">
                 Get started in minutes and find your next research star with our streamlined process
               </p>
             </div>
@@ -255,8 +233,8 @@ export default function ForProfessorsPage() {
                   <div className="flex flex-col md:flex-row gap-6 items-start">
                     <div className="flex-shrink-0">
                       <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-600 to-amber-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg">
-                        2
-                      </div>
+                2
+              </div>
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold mb-3">Receive Qualified Applications</h3>
@@ -278,7 +256,7 @@ export default function ForProfessorsPage() {
                         </li>
                       </ul>
                     </div>
-                  </div>
+            </div>
                 </CardContent>
               </Card>
             </StaggerItem>
@@ -289,14 +267,14 @@ export default function ForProfessorsPage() {
                   <div className="flex flex-col md:flex-row gap-6 items-start">
                     <div className="flex-shrink-0">
                       <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-600 to-amber-600 text-white flex items-center justify-center text-3xl font-bold shadow-lg">
-                        3
-                      </div>
+                3
+              </div>
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-bold mb-3">Connect and Hire</h3>
                       <p className="text-muted-foreground mb-4">
                         Communicate directly with candidates through our secure messaging system. Schedule interviews, request additional materials, and make offers all within the platform. Start your research collaboration seamlessly.
-                      </p>
+              </p>
                       <ul className="space-y-2 text-sm text-muted-foreground">
                         <li className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-green-600" />
@@ -311,8 +289,8 @@ export default function ForProfessorsPage() {
                           Send offers and manage onboarding
                         </li>
                       </ul>
-                    </div>
-                  </div>
+            </div>
+          </div>
                 </CardContent>
               </Card>
             </StaggerItem>
@@ -326,20 +304,20 @@ export default function ForProfessorsPage() {
           <ScaleIn>
             <Card className="border-2 shadow-2xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20">
               <CardContent className="p-12 text-center">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
                   Ready to Build Your Dream Team?
-                </h2>
+            </h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                   Join hundreds of professors who have found exceptional research talent through our platform. Start posting positions and receive qualified applications within days.
-                </p>
-                <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <Button size="lg" asChild className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 shadow-lg">
-                    <Link href="/signup">Get Started Free</Link>
-                  </Button>
+                <Link href="/signup">Get Started Free</Link>
+              </Button>
                   <Button size="lg" variant="outline" asChild className="border-2">
-                    <Link href="/contact">Talk to Sales</Link>
-                  </Button>
-                </div>
+                <Link href="/contact">Talk to Sales</Link>
+              </Button>
+            </div>
               </CardContent>
             </Card>
           </ScaleIn>

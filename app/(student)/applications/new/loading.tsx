@@ -1,11 +1,9 @@
-import { StudentNav } from "@/components/layout/student-nav"
 import { Card, CardContent } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function Loading() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 dark:from-blue-950/10 dark:via-background dark:to-indigo-950/10">
-      <StudentNav />
 
       {/* Breadcrumb Skeleton */}
       <div className="border-b bg-muted/30">

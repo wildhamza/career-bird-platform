@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -64,8 +65,14 @@ export default function ClaimProfilePage() {
       <header className="border-b bg-background/95 backdrop-blur-sm sticky top-0 z-50">
         <div className="container flex h-16 items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <span className="text-white text-xl">🐦</span>
+            <div className="h-8 w-8 group-hover:scale-110 transition-transform">
+              <Image 
+                src="/logo.png" 
+                alt="The Career Bird Logo" 
+                width={32} 
+                height={32}
+                className="object-contain"
+              />
             </div>
             <span className="font-bold text-base sm:text-lg">The Career Bird</span>
           </Link>

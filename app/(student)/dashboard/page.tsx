@@ -20,7 +20,6 @@ import { ProfileStrength } from "@/components/dashboard/profile-strength"
 import { ThisWeek } from "@/components/dashboard/this-week"
 import { PremiumCard } from "@/components/dashboard/premium-card"
 import { AIRecommendation } from "@/components/dashboard/ai-recommendation"
-import { StudentNav } from "@/components/layout/student-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 
@@ -158,7 +157,6 @@ export default async function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 dark:from-blue-950/10 dark:via-background dark:to-indigo-950/10">
-      <StudentNav />
 
       <main className="w-full max-w-7xl mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         {/* Welcome Section */}
@@ -168,32 +166,32 @@ export default async function StudentDashboard() {
               Welcome back, {firstName}! 👋
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground">
-              {deadlinesThisWeek > 0 ? (
-                <>
-                  You have{" "}
+            {deadlinesThisWeek > 0 ? (
+              <>
+                You have{" "}
                   <span className="font-bold text-orange-600 dark:text-orange-400">
-                    {deadlinesThisWeek} upcoming deadline{deadlinesThisWeek !== 1 ? "s" : ""}
-                  </span>{" "}
+                  {deadlinesThisWeek} upcoming deadline{deadlinesThisWeek !== 1 ? "s" : ""}
+                </span>{" "}
                   this week. Stay on track!
-                </>
-              ) : (
+              </>
+            ) : (
                 <>
                   <span className="font-semibold text-green-600 dark:text-green-400">All caught up!</span> No upcoming deadlines this week.
                 </>
-              )}
-            </p>
-          </div>
+            )}
+          </p>
+        </div>
         </FadeIn>
 
         {/* Stats Cards */}
         <FadeIn delay={0.1}>
           <div className="mb-8 sm:mb-10">
-            <DashboardStats
-              applicationsSent={applicationsSent}
-              pendingReview={pendingReview}
-              interviewsScheduled={interviewsScheduled}
-            />
-          </div>
+          <DashboardStats
+            applicationsSent={applicationsSent}
+            pendingReview={pendingReview}
+            interviewsScheduled={interviewsScheduled}
+          />
+        </div>
         </FadeIn>
 
         {/* Main Content Grid */}
@@ -202,13 +200,13 @@ export default async function StudentDashboard() {
           <div className="lg:col-span-2 space-y-6 lg:space-y-8">
             <StaggerContainer>
               <StaggerItem>
-                {/* AI Recommended Opportunity */}
-                <AIRecommendation grant={recommendedGrant || undefined} />
+            {/* AI Recommended Opportunity */}
+            <AIRecommendation grant={recommendedGrant || undefined} />
               </StaggerItem>
 
               <StaggerItem>
-                {/* Saved Opportunities */}
-                <SavedOpportunities savedGrants={savedGrants || []} />
+            {/* Saved Opportunities */}
+            <SavedOpportunities savedGrants={savedGrants || []} />
               </StaggerItem>
             </StaggerContainer>
           </div>
@@ -217,15 +215,15 @@ export default async function StudentDashboard() {
           <div className="space-y-6">
             <StaggerContainer staggerDelay={0.15}>
               <StaggerItem>
-                <ProfileStrength profile={profile} />
+            <ProfileStrength profile={profile} />
               </StaggerItem>
 
               <StaggerItem>
-                <ThisWeek upcomingDeadlines={upcomingDeadlines || []} />
+            <ThisWeek upcomingDeadlines={upcomingDeadlines || []} />
               </StaggerItem>
 
               <StaggerItem>
-                <PremiumCard />
+            <PremiumCard />
               </StaggerItem>
             </StaggerContainer>
           </div>

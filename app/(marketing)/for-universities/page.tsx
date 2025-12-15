@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Building2, Users, TrendingUp, CheckCircle, Award, Target, Globe, BarChart } from "lucide-react"
-import { MarketingNav } from "@/components/layout/marketing-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 import { ScaleIn } from "@/components/animations/scale-in"
@@ -10,7 +9,6 @@ import { ScaleIn } from "@/components/animations/scale-in"
 export default function UniversitiesPage() {
   return (
     <div className="min-h-screen bg-background">
-      <MarketingNav />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
@@ -29,29 +27,29 @@ export default function UniversitiesPage() {
           <div className="mx-auto max-w-3xl text-center">
             <FadeIn delay={0.1}>
 
-              <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-                Attract Top Global{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                  Talent
-                </span>
-              </h1>
+            <h1 className="mb-6 text-balance text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Attract Top Global{" "}
+              <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                Talent
+              </span>
+            </h1>
             </FadeIn>
 
             <FadeIn delay={0.2}>
-              <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
+            <p className="mb-8 text-pretty text-lg text-muted-foreground md:text-xl">
                 Streamline your graduate recruitment process and connect with highly-qualified students from around the world. Increase diversity, enhance your institution's global reach, and build a stronger academic community.
-              </p>
+            </p>
             </FadeIn>
 
             <FadeIn delay={0.3}>
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                 <Button size="lg" asChild className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
-                  <Link href="/signup">Partner With Us</Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <Link href="/contact">Schedule a Demo</Link>
-                </Button>
-              </div>
+                <Link href="/signup">Partner With Us</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/contact">Schedule a Demo</Link>
+              </Button>
+            </div>
             </FadeIn>
           </div>
         </div>
@@ -61,11 +59,11 @@ export default function UniversitiesPage() {
       <section className="py-20 md:py-32 bg-muted/30">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeIn>
-            <div className="mx-auto max-w-2xl text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                Why Universities Choose Us
-              </h2>
-              <p className="text-lg text-muted-foreground">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+              Why Universities Choose Us
+            </h2>
+            <p className="text-lg text-muted-foreground">
                 Transform your graduate recruitment with a comprehensive platform designed for modern universities
               </p>
             </div>
@@ -103,9 +101,9 @@ export default function UniversitiesPage() {
                 </div>
                 <h3 className="mb-3 text-xl font-bold">Global Reach</h3>
                 <p className="text-muted-foreground leading-relaxed">
-                  Reach talented students from 140+ countries actively seeking graduate opportunities. Enhance your institution's diversity and international reputation while expanding your global academic network.
-                </p>
-              </div>
+                  Reach talented students from around the world actively seeking graduate opportunities. Enhance your institution's diversity and international reputation while expanding your global academic network.
+              </p>
+            </div>
             </StaggerItem>
           </StaggerContainer>
         </div>
@@ -185,24 +183,6 @@ export default function UniversitiesPage() {
                 <p className="text-lg text-muted-foreground mb-8">
                   Join a growing network of universities that have modernized their recruitment process and increased their global student body.
                 </p>
-                <div className="grid grid-cols-2 gap-6 mb-8">
-                  <div>
-                    <div className="text-4xl font-bold text-blue-600 mb-2">85%</div>
-                    <div className="text-sm text-muted-foreground">Faster processing time</div>
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-blue-600 mb-2">3x</div>
-                    <div className="text-sm text-muted-foreground">More qualified applicants</div>
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-blue-600 mb-2">60%</div>
-                    <div className="text-sm text-muted-foreground">Reduction in admin costs</div>
-                  </div>
-                  <div>
-                    <div className="text-4xl font-bold text-blue-600 mb-2">92%</div>
-                    <div className="text-sm text-muted-foreground">University satisfaction</div>
-                  </div>
-                </div>
                 <Button size="lg" asChild className="bg-gradient-to-r from-blue-600 to-cyan-600">
                   <Link href="/contact">Learn More About Partnership</Link>
                 </Button>
@@ -292,20 +272,20 @@ export default function UniversitiesPage() {
           <ScaleIn>
             <Card className="border-2 shadow-2xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20">
               <CardContent className="p-12 text-center">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-                  Ready to Transform Your Recruitment?
-                </h2>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+              Ready to Transform Your Recruitment?
+            </h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                   Join leading universities worldwide in discovering and recruiting top global talent. Modernize your graduate admissions process and expand your international reach.
-                </p>
-                <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
                   <Button size="lg" asChild className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg">
-                    <Link href="/signup">Get Started</Link>
-                  </Button>
+                <Link href="/signup">Get Started</Link>
+              </Button>
                   <Button size="lg" variant="outline" asChild className="border-2">
-                    <Link href="/contact">Contact Sales</Link>
-                  </Button>
-                </div>
+                <Link href="/contact">Contact Sales</Link>
+              </Button>
+            </div>
               </CardContent>
             </Card>
           </ScaleIn>

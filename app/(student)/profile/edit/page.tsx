@@ -1,7 +1,7 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
+import { ProfileDisplay } from "@/components/profile-display"
 import { ProfileBuilderForm } from "@/components/profile-builder-form"
-import { StudentNav } from "@/components/layout/student-nav"
 
 export default async function ProfileEditPage() {
   const supabase = await getSupabaseServerClient()
@@ -13,28 +13,38 @@ export default async function ProfileEditPage() {
     redirect("/login")
   }
 
-  // Fetch profile
-  const { data: profile } = await supabase
+  // Fetch profile with full data
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", user.id)
-    .single()
+    .maybeSingle()
 
-  // Fetch universities on server side to avoid client-side security errors
-  const { data: universities, error: universitiesError } = await supabase
-    .from("universities")
-    .select("id, name, country, city")
-    .order("name", { ascending: true })
-    .limit(500)
+  if (profileError) {
+    console.error("Error fetching profile:", profileError)
+  }
 
-  if (universitiesError) {
-    console.error("Error fetching universities:", universitiesError)
+  // Merge user email into profile if profile exists or create base profile object
+  const enrichedProfile = profile ? {
+    ...profile,
+    email: profile.email || user.email,
+  } : {
+    user_id: user.id,
+    email: user.email,
+    first_name: user.user_metadata?.first_name || "",
+    last_name: user.user_metadata?.last_name || "",
+  }
+
+  // If profile is complete (has basic info), show display view, otherwise show form
+  const isProfileComplete = enrichedProfile.first_name && enrichedProfile.last_name && enrichedProfile.current_degree
+
+  if (isProfileComplete) {
+    return <ProfileDisplay profile={enrichedProfile} />
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 dark:from-blue-950/10 dark:via-background dark:to-indigo-950/10">
-      <StudentNav />
-      <ProfileBuilderForm profile={profile} universities={universities || []} />
+      <ProfileBuilderForm profile={enrichedProfile} />
     </div>
   )
 }

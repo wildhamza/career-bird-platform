@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2Icon, TrendingUpIcon } from "lucide-react"
-import { StudentNav } from "@/components/layout/student-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 
 async function getApplicationData(applicationId: string) {
@@ -100,13 +99,12 @@ export default async function ApplicationSuccessPage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white to-indigo-50/30 dark:from-blue-950/10 dark:via-background dark:to-indigo-950/10">
-      <StudentNav />
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
         <div className="max-w-4xl mx-auto">
           {/* Success Icon */}
           <FadeIn delay={0.1}>
-            <div className="flex justify-center mb-4 sm:mb-6">
+          <div className="flex justify-center mb-4 sm:mb-6">
               <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-2xl shadow-green-500/30 animate-pulse">
                 <CheckCircle2Icon className="h-10 w-10 sm:h-12 sm:w-12 text-white" />
               </div>
@@ -115,20 +113,20 @@ export default async function ApplicationSuccessPage({
 
           {/* Header */}
           <FadeIn delay={0.2}>
-            <div className="text-center mb-6 sm:mb-8">
+          <div className="text-center mb-6 sm:mb-8">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                Application Successfully Submitted!
-              </h1>
-              <p className="text-base sm:text-lg text-muted-foreground">
+              Application Successfully Submitted!
+            </h1>
+            <p className="text-base sm:text-lg text-muted-foreground">
                 Your application to <strong className="text-foreground">{universityName}</strong> has been sent securely.
-              </p>
-            </div>
+            </p>
+          </div>
           </FadeIn>
 
           {/* R-Score Card */}
           <FadeIn delay={0.3}>
             <Card className="mb-6 sm:mb-8 border-2 shadow-lg">
-              <CardContent className="p-4 sm:p-6 lg:p-8">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
               <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6">
                 <div className="flex-1 w-full">
                   <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -219,9 +217,9 @@ export default async function ApplicationSuccessPage({
           </FadeIn>
 
           <FadeIn delay={0.4}>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
               <Button size="lg" asChild className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg">
-                <Link href="/dashboard">
+              <Link href="/dashboard">
                 <svg className="mr-2 h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -236,28 +234,28 @@ export default async function ApplicationSuccessPage({
                     d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                   />
                 </svg>
-                  Track Application Status
-                </Link>
-              </Button>
+                Track Application Status
+              </Link>
+            </Button>
               <Button variant="outline" size="lg" className="w-full sm:w-auto border-2">
-                <svg className="mr-2 h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-                Download Receipt
-              </Button>
-            </div>
+              <svg className="mr-2 h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Download Receipt
+            </Button>
+          </div>
           </FadeIn>
 
           {/* Based on R-Score */}
           {recommendedGrants.length > 0 && (
             <FadeIn delay={0.5}>
               <Card className="border-2 shadow-lg">
-                <CardContent className="p-4 sm:p-6">
+              <CardContent className="p-4 sm:p-6">
                 <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Recommended Opportunities</h3>
                 <div className="space-y-3 sm:space-y-4">
                   {recommendedGrants.map((grant) => (

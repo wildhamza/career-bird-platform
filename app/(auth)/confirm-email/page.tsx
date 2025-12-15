@@ -17,7 +17,7 @@ export default function ConfirmEmailPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer)
-          router.push("/dashboard")
+          window.location.href = "/dashboard"
           return 0
         }
         return prev - 1
@@ -68,7 +68,7 @@ export default function ConfirmEmailPage() {
               >
                 Your email has been successfully verified. Your account is now active and ready to use!
               </motion.p>
-            </div>
+          </div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -80,11 +80,11 @@ export default function ConfirmEmailPage() {
                 <CardContent className="p-4 flex items-center gap-3 text-left">
                   <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center flex-shrink-0">
                     <Sparkles className="h-5 w-5 text-white" />
-                  </div>
+          </div>
                   <div>
                     <p className="font-semibold text-sm">Full Access Unlocked</p>
                     <p className="text-xs text-muted-foreground">Browse thousands of scholarships</p>
-                  </div>
+        </div>
                 </CardContent>
               </Card>
 
@@ -92,11 +92,11 @@ export default function ConfirmEmailPage() {
                 <CardContent className="p-4 flex items-center gap-3 text-left">
                   <div className="h-10 w-10 rounded-xl bg-purple-600 flex items-center justify-center flex-shrink-0">
                     <Target className="h-5 w-5 text-white" />
-                  </div>
-                  <div>
+            </div>
+            <div>
                     <p className="font-semibold text-sm">Personalized Matches</p>
                     <p className="text-xs text-muted-foreground">Get opportunities tailored to you</p>
-                  </div>
+            </div>
                 </CardContent>
               </Card>
 
@@ -104,11 +104,11 @@ export default function ConfirmEmailPage() {
                 <CardContent className="p-4 flex items-center gap-3 text-left">
                   <div className="h-10 w-10 rounded-xl bg-orange-600 flex items-center justify-center flex-shrink-0">
                     <Award className="h-5 w-5 text-white" />
-                  </div>
+          </div>
                   <div>
                     <p className="font-semibold text-sm">Application Tracking</p>
                     <p className="text-xs text-muted-foreground">Manage all your applications</p>
-                  </div>
+        </div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -120,17 +120,17 @@ export default function ConfirmEmailPage() {
               className="space-y-4"
             >
               <Button
-                onClick={() => router.push("/dashboard")}
+                onClick={() => window.location.href = "/dashboard"}
                 className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg"
                 size="lg"
               >
-                Go to Dashboard
-              </Button>
+            Go to Dashboard
+          </Button>
 
               <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                Redirecting automatically in {countdown} second{countdown !== 1 ? "s" : ""}...
-              </p>
+            Redirecting automatically in {countdown} second{countdown !== 1 ? "s" : ""}...
+          </p>
             </motion.div>
           </CardContent>
         </Card>

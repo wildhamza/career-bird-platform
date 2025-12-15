@@ -16,46 +16,46 @@ export default async function ScholarshipsPage() {
   const [grantsResult, countResult, savedResult] = await Promise.all([
     // Grants query
     supabase
-      .from("grants")
-      .select(
-        `
+    .from("grants")
+    .select(
+      `
+      id,
+      title,
+      description,
+      grant_type,
+      university_id,
+      degree_levels,
+      fields_of_study,
+      min_gpa,
+      funding_amount,
+      covers_tuition,
+      covers_living,
+      deadline,
+      is_featured,
+      created_at,
+      universities:university_id (
         id,
-        title,
-        description,
-        grant_type,
-        university_id,
-        degree_levels,
-        fields_of_study,
-        min_gpa,
-        funding_amount,
-        covers_tuition,
-        covers_living,
-        deadline,
-        is_featured,
-        created_at,
-        universities:university_id (
-          id,
-          name,
-          country,
-          city,
-          logo_url
-        )
-      `,
+        name,
+        country,
+        city,
+        logo_url
       )
-      .order("created_at", { ascending: false })
+    `,
+    )
+    .order("created_at", { ascending: false })
       .limit(INITIAL_BATCH_SIZE),
-    
+
     // Total count query
     supabase
-      .from("grants")
+    .from("grants")
       .select("*", { count: "exact", head: true }),
-    
+
     // Saved grants query (only if user is logged in)
     user
       ? supabase
-          .from("saved_grants")
-          .select("grant_id")
-          .eq("user_id", user.id)
+      .from("saved_grants")
+      .select("grant_id")
+      .eq("user_id", user.id)
       : Promise.resolve({ data: null }),
   ])
 

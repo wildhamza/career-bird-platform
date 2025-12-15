@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,29 +12,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { CheckCircle2Icon, CircleIcon, UploadIcon, Menu, X } from "lucide-react"
-import { getSupabaseBrowserClient } from "@/lib/supabase/client"
+import { saveProfile } from "@/app/(student)/profile/edit/actions"
 
 interface ProfileBuilderFormProps {
   profile: any
-  universities?: University[]
 }
 
 type Step = "introduction" | "personal" | "academic" | "research" | "documents" | "review"
 
-interface University {
-  id: string
-  name: string
-  country: string
-  city?: string
-}
-
-export function ProfileBuilderForm({ profile, universities: initialUniversities = [] }: ProfileBuilderFormProps) {
+export function ProfileBuilderForm({ profile }: ProfileBuilderFormProps) {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<Step>("introduction")
   const [loading, setLoading] = useState(false)
-  const [universities, setUniversities] = useState<University[]>(initialUniversities)
-  const [loadingUniversities, setLoadingUniversities] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null)
+  const [documentFile, setDocumentFile] = useState<File | null>(null)
   const [formData, setFormData] = useState({
     firstName: profile?.first_name || "",
     lastName: profile?.last_name || "",
@@ -45,6 +38,8 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
     dateOfBirth: profile?.date_of_birth || "",
     bio: profile?.bio || "",
     university: profile?.university_id || "",
+    universityName: profile?.university_name || "",
+    universityCountry: profile?.university_country || "",
     degree: profile?.current_degree || "",
     fieldOfStudy: profile?.field_of_study || "",
     gpa: profile?.gpa?.toString() || "",
@@ -59,41 +54,65 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
     researchInterests: profile?.research_interests?.join(", ") || "",
   })
 
-  // Only fetch universities on client if not provided via props
+  // Sync form data when profile changes
   useEffect(() => {
-    if (initialUniversities.length > 0) {
-      setLoadingUniversities(false)
-      return
+    if (profile) {
+      setFormData({
+        firstName: profile.first_name || "",
+        lastName: profile.last_name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        nationality: profile.nationality || "",
+        currentCountry: profile.current_country || "",
+        currentCity: profile.current_city || "",
+        dateOfBirth: profile.date_of_birth || "",
+        bio: profile.bio || "",
+        university: profile.university_id || "",
+        universityName: profile.university_name || "",
+        universityCountry: profile.university_country || "",
+        degree: profile.current_degree || "",
+        fieldOfStudy: profile.field_of_study || "",
+        gpa: profile.gpa?.toString() || "",
+        gpaScale: profile.gpa_scale?.toString() || "4.0",
+        graduationYear: profile.graduation_year?.toString() || "",
+        greVerbal: profile.gre_verbal?.toString() || "",
+        greQuant: profile.gre_quant?.toString() || "",
+        greAwa: profile.gre_awa?.toString() || "",
+        toeflScore: profile.toefl_score?.toString() || "",
+        startDate: "",
+        endDate: "",
+        researchInterests: profile.research_interests?.join(", ") || "",
+      })
     }
+  }, [profile])
 
-    const fetchUniversities = async () => {
-      try {
-        setLoadingUniversities(true)
-        const supabase = getSupabaseBrowserClient()
-        const { data, error } = await supabase
-          .from("universities")
-          .select("id, name, country, city")
-          .order("name", { ascending: true })
-          .limit(500)
 
-        if (error) throw error
-        setUniversities(data || [])
-      } catch (error) {
-        console.error("Error fetching universities:", error)
-      } finally {
-        setLoadingUniversities(false)
-      }
+  // Check if each step is completed based on form data
+  const isStepComplete = (stepId: Step): boolean => {
+    switch (stepId) {
+      case "introduction":
+        return !!(formData.firstName && formData.lastName && formData.email)
+      case "personal":
+        return !!(formData.dateOfBirth || formData.nationality || formData.bio)
+      case "academic":
+        return !!(formData.universityName && formData.degree && formData.fieldOfStudy)
+      case "research":
+        return !!formData.researchInterests
+      case "documents":
+        return !!(transcriptFile || documentFile)
+      case "review":
+        return false // Review is never marked complete
+      default:
+        return false
     }
-
-    fetchUniversities()
-  }, [initialUniversities])
+  }
 
   const steps: { id: Step; label: string; completed: boolean }[] = [
-    { id: "introduction", label: "Introduction", completed: true },
-    { id: "personal", label: "Personal Details", completed: true },
-    { id: "academic", label: "Academic History", completed: currentStep !== "academic" },
-    { id: "research", label: "Research Interests", completed: false },
-    { id: "documents", label: "Documents", completed: false },
+    { id: "introduction", label: "Introduction", completed: isStepComplete("introduction") },
+    { id: "personal", label: "Personal Details", completed: isStepComplete("personal") },
+    { id: "academic", label: "Academic History", completed: isStepComplete("academic") },
+    { id: "research", label: "Research Interests", completed: isStepComplete("research") },
+    { id: "documents", label: "Documents", completed: isStepComplete("documents") },
     { id: "review", label: "Review", completed: false },
   ]
 
@@ -102,53 +121,39 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
 
   const handleSave = async () => {
     setLoading(true)
-    const supabase = getSupabaseBrowserClient()
 
-    const updates: any = {
-      first_name: formData.firstName,
-      last_name: formData.lastName,
-      email: formData.email,
-      phone: formData.phone || null,
-      nationality: formData.nationality || null,
-      current_country: formData.currentCountry || null,
-      current_city: formData.currentCity || null,
-      date_of_birth: formData.dateOfBirth || null,
-      bio: formData.bio || null,
-      university_id: formData.university || null,
-      current_degree: formData.degree || null,
-      field_of_study: formData.fieldOfStudy || null,
-      gpa: formData.gpa ? Number.parseFloat(formData.gpa) : null,
-      gpa_scale: formData.gpaScale ? Number.parseFloat(formData.gpaScale) : 4.0,
-      graduation_year: formData.graduationYear ? Number.parseInt(formData.graduationYear) : null,
-      gre_verbal: formData.greVerbal ? Number.parseInt(formData.greVerbal) : null,
-      gre_quant: formData.greQuant ? Number.parseInt(formData.greQuant) : null,
-      gre_awa: formData.greAwa ? Number.parseFloat(formData.greAwa) : null,
-      toefl_score: formData.toeflScore ? Number.parseInt(formData.toeflScore) : null,
-      research_interests: formData.researchInterests
-        ? formData.researchInterests.split(",").map((s: string) => s.trim()).filter(Boolean)
-        : [],
-      updated_at: new Date().toISOString(),
-    }
+    try {
+      // Call server action to save profile
+      await saveProfile({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        nationality: formData.nationality,
+        currentCountry: formData.currentCountry,
+        currentCity: formData.currentCity,
+        dateOfBirth: formData.dateOfBirth,
+        bio: formData.bio,
+        university: formData.university,
+        universityName: formData.universityName,
+        universityCountry: formData.universityCountry,
+        degree: formData.degree,
+        fieldOfStudy: formData.fieldOfStudy,
+        gpa: formData.gpa,
+        gpaScale: formData.gpaScale,
+        graduationYear: formData.graduationYear,
+        greVerbal: formData.greVerbal,
+        greQuant: formData.greQuant,
+        greAwa: formData.greAwa,
+        toeflScore: formData.toeflScore,
+        researchInterests: formData.researchInterests,
+      })
 
-    // Get user_id from profile or auth
-    const { data: { user } } = await supabase.auth.getUser()
-    const userId = profile?.user_id || user?.id
-
-    if (!userId) {
       setLoading(false)
-      return
-    }
 
-    const { error } = await supabase
-      .from("profiles")
-      .upsert({ ...updates, user_id: userId }, { onConflict: "user_id" })
-
-    setLoading(false)
-
-    if (!error) {
       if (currentStep === "review") {
-        router.push("/dashboard")
-        router.refresh()
+        // Force full reload to update navbar and profile data everywhere
+        window.location.href = "/dashboard"
       } else {
         // Move to next step
         const nextIndex = currentStepIndex + 1
@@ -156,6 +161,10 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
           setCurrentStep(steps[nextIndex].id)
         }
       }
+    } catch (error) {
+      setLoading(false)
+      console.error("Error saving profile:", error)
+      alert("Failed to save profile. Please try again.")
     }
   }
 
@@ -166,17 +175,11 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
     }
   }
 
-  // Calculate actual completion percentage
+  // Calculate actual completion percentage based on completed steps
   const calculateCompletion = () => {
-    let completed = 0
-    const total = 6
-    if (formData.firstName) completed++
-    if (formData.lastName) completed++
-    if (formData.degree) completed++
-    if (formData.fieldOfStudy) completed++
-    if (formData.gpa) completed++
-    if (formData.researchInterests) completed++
-    return Math.round((completed / total) * 100)
+    const completedSteps = steps.filter(step => step.completed).length
+    const totalSteps = steps.length - 1 // Exclude review step from total
+    return Math.round((completedSteps / totalSteps) * 100)
   }
 
   const completion = calculateCompletion()
@@ -187,8 +190,14 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-white text-xl">🐦</span>
+            <div className="h-8 w-8">
+              <Image 
+                src="/logo.png" 
+                alt="The Career Bird Logo" 
+                width={32} 
+                height={32}
+                className="object-contain"
+              />
             </div>
             <span className="font-semibold text-lg hidden sm:inline-block">The Career Bird</span>
           </Link>
@@ -329,8 +338,12 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 sm:pt-6">
                   <div className="w-full sm:w-auto" />
-                  <Button onClick={handleSave} disabled={loading} className="w-full sm:w-auto">
-                    Next: Personal Details
+                  <Button 
+                    onClick={handleSave} 
+                    disabled={loading || !formData.firstName || !formData.lastName || !formData.email} 
+                    className="w-full sm:w-auto"
+                  >
+                    {loading ? "Saving..." : "Next: Personal Details"}
                     <svg className="ml-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -435,26 +448,28 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
                   <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="university">University / Institution Name *</Label>
-                        {loadingUniversities ? (
-                          <div className="h-10 w-full rounded-md border bg-muted animate-pulse" />
-                        ) : (
-                          <Select
-                            value={formData.university}
-                            onValueChange={(value) => setFormData({ ...formData, university: value })}
-                          >
-                            <SelectTrigger id="university" className="w-full">
-                              <SelectValue placeholder="Select your university" />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">
-                              {universities.map((uni) => (
-                                <SelectItem key={uni.id} value={uni.id}>
-                                  {uni.name} {uni.city ? `(${uni.city}, ${uni.country})` : `(${uni.country})`}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
+                        <Label htmlFor="universityName">University / Institution Name *</Label>
+                        <Input
+                          id="universityName"
+                          placeholder="e.g., Harvard University, MIT, Oxford University"
+                          value={formData.universityName}
+                          onChange={(e) => setFormData({ ...formData, universityName: e.target.value })}
+                          required
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Enter the full name of your university or institution
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="universityCountry">Country *</Label>
+                        <Input
+                          id="universityCountry"
+                          placeholder="e.g., United States, United Kingdom, Pakistan"
+                          value={formData.universityCountry}
+                          onChange={(e) => setFormData({ ...formData, universityCountry: e.target.value })}
+                          required
+                        />
                       </div>
 
                       <div className="grid md:grid-cols-2 gap-4">
@@ -465,7 +480,7 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
                             onValueChange={(value) => setFormData({ ...formData, degree: value })}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Master of Science (MSc)" />
+                              <SelectValue placeholder="Select your degree level" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="bachelors">Bachelor's Degree</SelectItem>
@@ -577,12 +592,59 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="transcripts">Transcripts & Certificates</Label>
-                        <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors">
+                        <Label htmlFor="transcripts">Transcripts & Certificates (Optional)</Label>
+                        <div 
+                          className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors"
+                          onClick={() => document.getElementById('transcript-upload')?.click()}
+                        >
+                          <input
+                            id="transcript-upload"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) {
+                                if (file.size > 5 * 1024 * 1024) {
+                                  alert('File size must be less than 5MB')
+                                  return
+                                }
+                                setTranscriptFile(file)
+                              }
+                            }}
+                          />
                           <UploadIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                          <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                          <p className="text-xs text-muted-foreground">PDF, JPG (MAX. 5MB)</p>
+                          {transcriptFile ? (
+                            <>
+                              <p className="text-sm font-medium mb-1 text-green-600">
+                                ✓ {transcriptFile.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {(transcriptFile.size / 1024).toFixed(0)} KB - Click to change
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
+                              <p className="text-xs text-muted-foreground">PDF, JPG, PNG (MAX. 5MB)</p>
+                            </>
+                          )}
                         </div>
+                        {transcriptFile && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setTranscriptFile(null)
+                              const input = document.getElementById('transcript-upload') as HTMLInputElement
+                              if (input) input.value = ''
+                            }}
+                            className="w-full text-red-600 hover:text-red-700"
+                          >
+                            Remove File
+                          </Button>
+                        )}
                       </div>
 
                       <Button variant="link" className="text-primary">
@@ -679,12 +741,59 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
                   <CardContent className="p-4 sm:p-6 space-y-4 sm:space-y-6">
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Transcripts & Certificates</Label>
-                        <div className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors">
+                        <Label htmlFor="documents">Transcripts & Certificates</Label>
+                        <div 
+                          className="border-2 border-dashed rounded-lg p-8 text-center hover:border-primary cursor-pointer transition-colors"
+                          onClick={() => document.getElementById('document-upload')?.click()}
+                        >
+                          <input
+                            id="document-upload"
+                            type="file"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) {
+                                if (file.size > 5 * 1024 * 1024) {
+                                  alert('File size must be less than 5MB')
+                                  return
+                                }
+                                setDocumentFile(file)
+                              }
+                            }}
+                          />
                           <UploadIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                          <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
-                          <p className="text-xs text-muted-foreground">PDF, JPG (MAX. 5MB)</p>
+                          {documentFile ? (
+                            <>
+                              <p className="text-sm font-medium mb-1 text-green-600">
+                                ✓ {documentFile.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {(documentFile.size / 1024).toFixed(0)} KB - Click to change
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-sm font-medium mb-1">Click to upload or drag and drop</p>
+                              <p className="text-xs text-muted-foreground">PDF, JPG, PNG (MAX. 5MB)</p>
+                            </>
+                          )}
                         </div>
+                        {documentFile && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setDocumentFile(null)
+                              const input = document.getElementById('document-upload') as HTMLInputElement
+                              if (input) input.value = ''
+                            }}
+                            className="w-full text-red-600 hover:text-red-700"
+                          >
+                            Remove File
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -735,6 +844,8 @@ export function ProfileBuilderForm({ profile, universities: initialUniversities 
                       <div>
                         <h3 className="font-semibold mb-2">Academic Information</h3>
                         <div className="text-sm space-y-1 text-muted-foreground">
+                          {formData.universityName && <p><strong className="text-foreground">University:</strong> {formData.universityName}</p>}
+                          {formData.universityCountry && <p><strong className="text-foreground">Country:</strong> {formData.universityCountry}</p>}
                           {formData.degree && <p><strong className="text-foreground">Degree:</strong> {formData.degree}</p>}
                           {formData.fieldOfStudy && <p><strong className="text-foreground">Field of Study:</strong> {formData.fieldOfStudy}</p>}
                           {formData.gpa && <p><strong className="text-foreground">GPA:</strong> {formData.gpa} / {formData.gpaScale}</p>}

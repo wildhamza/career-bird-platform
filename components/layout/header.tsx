@@ -34,8 +34,7 @@ export function Header({ user }: HeaderProps) {
   const handleSignOut = async () => {
     const supabase = getSupabaseBrowserClient()
     await supabase.auth.signOut()
-    router.push("/login")
-    router.refresh()
+    window.location.href = "/login"
   }
 
   const firstName = user?.user_metadata?.first_name || ""

@@ -2,9 +2,17 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   GraduationCap,
   FileText,
@@ -20,13 +28,27 @@ import {
   Home,
 } from "lucide-react"
 import { motion } from "framer-motion"
+import { signOut } from "@/app/(auth)/logout/actions"
 
 export function StudentNav() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
+  const handleSignOut = async () => {
+    try {
+      // Use server action for secure sign out
+      await signOut()
+    } catch (error) {
+      // Ignore errors - redirect anyway
+      console.error("Sign out error:", error)
+    } finally {
+      // Always redirect to login page
+      window.location.replace("/login")
+    }
+  }
+
   const studentLinks = [
-    { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/", label: "Home", icon: Home },
     { href: "/scholarships", label: "Scholarships", icon: GraduationCap },
     { href: "/applications", label: "Applications", icon: FileText },
     { href: "/professors", label: "Professors", icon: Users },
@@ -35,6 +57,9 @@ export function StudentNav() {
   ]
 
   const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === href
+    }
     if (href === "/dashboard") {
       return pathname === href
     }
@@ -47,11 +72,15 @@ export function StudentNav() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center gap-2 group">
-            <div className="relative">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
-                <span className="text-white text-xl">🐦</span>
-              </div>
-              <div className="absolute -inset-1 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl opacity-0 group-hover:opacity-20 blur transition-opacity" />
+            <div className="h-10 w-10 group-hover:scale-110 transition-transform">
+              <Image 
+                src="/logo.png" 
+                alt="The Career Bird Logo" 
+                width={40} 
+                height={40}
+                className="object-contain"
+                priority
+              />
             </div>
             <div className="hidden sm:block">
               <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
@@ -100,19 +129,39 @@ export function StudentNav() {
               <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-red-600" />
             </Button>
 
-            {/* Settings - Desktop */}
-            <Link href="/settings" className="hidden lg:block">
-              <Button variant="ghost" size="icon" className="h-10 w-10">
-                <Settings className="h-5 w-5" />
-              </Button>
-            </Link>
-
-            {/* Profile Avatar */}
-            <Link href="/profile/edit" className="hidden sm:block">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center text-white font-semibold shadow-md">
-                <User className="h-5 w-5" />
-              </div>
-            </Link>
+            {/* Profile Avatar Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="hidden sm:block">
+                <button className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center text-white font-semibold shadow-md outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  <User className="h-5 w-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/profile/edit" className="flex items-center w-full">
+                    <User className="mr-2 h-4 w-4" />
+                    Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="flex items-center w-full">
+                    <Settings className="mr-2 h-4 w-4" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault()
+                    handleSignOut()
+                  }}
+                  className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/20"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* Mobile Menu */}
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -181,6 +230,7 @@ export function StudentNav() {
                   <div className="border-t pt-4 space-y-2">
                     <Button
                       variant="ghost"
+                      onClick={handleSignOut}
                       className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20"
                     >
                       <LogOut className="mr-2 h-4 w-4" />

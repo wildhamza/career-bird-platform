@@ -1,5 +1,6 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { getUserRole } from "@/lib/auth/get-user-role"
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await getSupabaseServerClient()
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { error, data } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
       // If there's an error, redirect to login with error message
@@ -20,8 +21,23 @@ export async function GET(request: Request) {
     if (type === "signup") {
       return NextResponse.redirect(`${origin}/confirm-email`)
     }
+
+    // Check user role and redirect accordingly
+    if (data?.user) {
+      try {
+        const role = await getUserRole(data.user.id)
+        if (role === 'professor') {
+          return NextResponse.redirect(`${origin}/professor/dashboard`)
+        } else if (role === 'admin') {
+          return NextResponse.redirect(`${origin}/admin/dashboard`)
+        }
+      } catch (roleError) {
+        // If role check fails, default to student dashboard
+        console.error("Error checking user role:", roleError)
+      }
+    }
   }
 
-  // Default redirect to dashboard for OAuth or other flows
+  // Default redirect to student dashboard
   return NextResponse.redirect(`${origin}/dashboard`)
 }

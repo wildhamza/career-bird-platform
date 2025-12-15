@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,7 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Menu, GraduationCap, Building2, Users, BookOpen, User, LayoutDashboard, Sparkles, Home } from "lucide-react"
+import { Menu, GraduationCap, Building2, Users, BookOpen, User, LayoutDashboard, Sparkles, Home, Mail } from "lucide-react"
 
 interface MarketingNavProps {
   user?: any
@@ -26,9 +27,8 @@ export function MarketingNav({ user }: MarketingNavProps = {}) {
   const publicLinks = [
     { href: "/", label: "Home", icon: Home },
     { href: "/scholarships", label: "Scholarships", icon: GraduationCap },
-    { href: "/for-professors", label: "For Professors", icon: Users },
-    { href: "/for-universities", label: "For Universities", icon: Building2 },
     { href: "/about", label: "About", icon: BookOpen },
+    { href: "/contact", label: "Contact", icon: Mail },
   ]
 
   const userLinks = [
@@ -39,20 +39,24 @@ export function MarketingNav({ user }: MarketingNavProps = {}) {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo Section */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <div className="absolute inset-0 bg-blue-600 rounded-xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
-              <div className="relative h-11 w-11 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
-                <span className="text-white text-2xl">🐦</span>
-              </div>
+            <div className="h-10 w-10 group-hover:scale-110 transition-transform">
+              <Image 
+                src="/logo.png" 
+                alt="The Career Bird Logo" 
+                width={40} 
+                height={40}
+                className="object-contain"
+                priority
+              />
             </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-xl tracking-tight">The Career Bird</span>
-              <span className="text-[10px] text-muted-foreground font-medium tracking-wide uppercase hidden sm:block">
-                Your Global Academic Partner
+            <div className="hidden sm:block">
+              <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                The Career Bird
               </span>
+              <p className="text-xs text-muted-foreground">Your Global Academic Partner</p>
             </div>
           </Link>
 
@@ -159,8 +163,14 @@ export function MarketingNav({ user }: MarketingNavProps = {}) {
                 <SheetHeader>
                   <SheetTitle>
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center shadow-lg">
-                        <span className="text-white text-xl">🐦</span>
+                      <div className="h-10 w-10">
+                        <Image 
+                          src="/logo.png" 
+                          alt="The Career Bird Logo" 
+                          width={40} 
+                          height={40}
+                          className="object-contain"
+                        />
                       </div>
                       <div className="flex flex-col items-start">
                         <span className="text-base">The Career Bird</span>

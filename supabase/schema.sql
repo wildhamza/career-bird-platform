@@ -87,6 +87,8 @@ CREATE TABLE public.profiles (
   current_degree degree_level,
   field_of_study TEXT,
   university_id UUID REFERENCES public.universities(id),
+  university_name TEXT, -- Free text field for university name (academic history)
+  university_country TEXT, -- Country of the university (academic history)
   gpa DECIMAL(3,2),
   gpa_scale DECIMAL(3,1) DEFAULT 4.0,
   graduation_year INT,

@@ -1,11 +1,9 @@
-import { MarketingNav } from "@/components/layout/marketing-nav"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 
 export default function Loading() {
   return (
     <div className="min-h-screen bg-background">
-      <MarketingNav />
 
       {/* Breadcrumb Skeleton */}
       <div className="border-b bg-muted/30">

@@ -141,32 +141,32 @@ export function ApplicationsPageClient({ applications }: ApplicationsPageClientP
               <CardContent className="p-6">
                 <div className="text-3xl sm:text-4xl font-bold">{stats.total}</div>
                 <p className="text-sm text-muted-foreground mt-2">Total Applications</p>
-              </CardContent>
-            </Card>
+          </CardContent>
+        </Card>
           </StaggerItem>
           <StaggerItem>
             <Card className="border-2 hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="text-3xl sm:text-4xl font-bold text-blue-600">{stats.submitted}</div>
                 <p className="text-sm text-muted-foreground mt-2">Under Review</p>
-              </CardContent>
-            </Card>
+          </CardContent>
+        </Card>
           </StaggerItem>
           <StaggerItem>
             <Card className="border-2 hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="text-3xl sm:text-4xl font-bold text-green-600">{stats.accepted}</div>
                 <p className="text-sm text-muted-foreground mt-2">Accepted</p>
-              </CardContent>
-            </Card>
+          </CardContent>
+        </Card>
           </StaggerItem>
           <StaggerItem>
             <Card className="border-2 hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="text-3xl sm:text-4xl font-bold text-gray-600">{stats.pending}</div>
                 <p className="text-sm text-muted-foreground mt-2">Drafts</p>
-              </CardContent>
-            </Card>
+          </CardContent>
+        </Card>
           </StaggerItem>
         </StaggerContainer>
       </FadeIn>
@@ -174,25 +174,25 @@ export function ApplicationsPageClient({ applications }: ApplicationsPageClientP
       {/* Search and Filter */}
       <FadeIn delay={0.3}>
         <div className="mb-8 flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
+        <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search applications by university, grant title, or status..."
+          <Input
+            placeholder="Search applications by university, grant title, or status..."
               className="pl-12 h-12 border-2"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Button variant="outline" className="w-full sm:w-auto h-12 border-2">
-            <Filter className="mr-2 h-4 w-4" />
-            Filter
-          </Button>
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
+          <Button variant="outline" className="w-full sm:w-auto h-12 border-2">
+          <Filter className="mr-2 h-4 w-4" />
+          Filter
+        </Button>
+      </div>
       </FadeIn>
 
       {/* Applications List */}
       <FadeIn delay={0.4}>
-        <ApplicationsList applications={filteredApplications} searchQuery={searchQuery} />
+      <ApplicationsList applications={filteredApplications} searchQuery={searchQuery} />
       </FadeIn>
     </>
   )

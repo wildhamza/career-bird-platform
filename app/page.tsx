@@ -1,7 +1,7 @@
 import Link from "next/link"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Globe, Sparkles, ShieldCheck } from "lucide-react"
-import { MarketingNav } from "@/components/layout/marketing-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-container"
 import { ScaleIn } from "@/components/animations/scale-in"
@@ -9,7 +9,6 @@ import { ScaleIn } from "@/components/animations/scale-in"
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
-      <MarketingNav />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
@@ -83,7 +82,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">Global Mobility</h3>
                 <p className="text-muted-foreground">
-                  Seamlessly connect with opportunities in 140+ countries. We handle the complexity of international
+                  Seamlessly connect with opportunities worldwide. We handle the complexity of international
                   relocation and support.
                 </p>
               </div>
@@ -215,8 +214,14 @@ export default function LandingPage() {
             <StaggerItem>
               <div>
                 <Link href="/" className="flex items-center gap-2 mb-4">
-                  <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                    <span className="text-white text-xl font-bold">🐦</span>
+                  <div className="h-8 w-8">
+                    <Image 
+                      src="/logo.png" 
+                      alt="The Career Bird Logo" 
+                      width={32} 
+                      height={32}
+                      className="object-contain"
+                    />
                   </div>
                   <span className="font-semibold">The Career Bird</span>
                 </Link>

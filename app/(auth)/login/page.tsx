@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react"
 import { motion } from "framer-motion"
+import { getUserRoleAction } from "./actions"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -36,10 +38,23 @@ export default function LoginPage() {
       if (error) {
         setError(error.message)
         setLoading(false)
-      } else if (data?.session) {
-        // Successful login - refresh to update server-side session
-        router.refresh()
-        router.push("/dashboard")
+      } else if (data?.session && data?.user) {
+        // Check user role and redirect accordingly
+        try {
+          const role = await getUserRoleAction(data.user.id)
+          if (role === 'professor') {
+            window.location.href = "/professor/dashboard"
+          } else if (role === 'admin') {
+            window.location.href = "/admin/dashboard"
+          } else {
+            // Default to student dashboard
+            window.location.href = "/dashboard"
+          }
+        } catch (roleError) {
+          // If role check fails, default to student dashboard
+          console.error("Error checking user role:", roleError)
+          window.location.href = "/dashboard"
+        }
       }
     } catch (err) {
       // Handle any unexpected errors
@@ -103,8 +118,14 @@ export default function LoginPage() {
         >
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 lg:hidden group">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="text-white text-xl">🐦</span>
+              <div className="h-8 w-8 group-hover:scale-110 transition-transform">
+                <Image 
+                  src="/logo.png" 
+                  alt="The Career Bird Logo" 
+                  width={32} 
+                  height={32}
+                  className="object-contain"
+                />
               </div>
               <span className="font-bold text-lg">The Career Bird</span>
             </Link>

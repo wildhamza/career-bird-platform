@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -114,34 +115,7 @@ export default function SignupPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                15K+
-              </div>
-              <p className="text-blue-200">Active Students</p>
-            </div>
-            <div className="space-y-2">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                1,000+
-              </div>
-              <p className="text-blue-200">Universities</p>
-            </div>
-            <div className="space-y-2">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                140+
-              </div>
-              <p className="text-blue-200">Countries</p>
-            </div>
-            <div className="space-y-2">
-              <div className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                $50M+
-              </div>
-              <p className="text-blue-200">In Scholarships</p>
-            </div>
-          </div>
-
-          <div className="space-y-4 pt-4 border-t border-white/20">
+          <div className="space-y-4">
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0 mt-1">
                 <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -180,8 +154,14 @@ export default function SignupPage() {
         >
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <span className="text-white text-xl">🐦</span>
+              <div className="h-8 w-8 group-hover:scale-110 transition-transform">
+                <Image 
+                  src="/logo.png" 
+                  alt="The Career Bird Logo" 
+                  width={32} 
+                  height={32}
+                  className="object-contain"
+                />
               </div>
               <span className="font-bold text-lg">The Career Bird</span>
             </Link>

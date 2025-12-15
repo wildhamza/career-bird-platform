@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { MarketingNav } from "@/components/layout/marketing-nav"
 import { FadeIn } from "@/components/animations/fade-in"
 import { Card, CardContent } from "@/components/ui/card"
 import { Shield, Lock, Eye, Database, UserCheck, AlertCircle } from "lucide-react"
@@ -7,7 +6,6 @@ import { Shield, Lock, Eye, Database, UserCheck, AlertCircle } from "lucide-reac
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
-      <MarketingNav />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">

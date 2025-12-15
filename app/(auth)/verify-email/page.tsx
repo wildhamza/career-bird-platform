@@ -75,8 +75,8 @@ export default function VerifyEmailPage() {
               </p>
               <p className="text-lg sm:text-xl font-semibold text-blue-600 dark:text-blue-400 break-all">
                 {email || "your email"}
-              </p>
-            </div>
+            </p>
+        </div>
 
             <Card className="bg-muted/50 border-2">
               <CardContent className="p-6 space-y-4 text-left">
@@ -102,40 +102,40 @@ export default function VerifyEmailPage() {
                       <p className="text-sm text-muted-foreground">{step}</p>
                     </motion.div>
                   ))}
-                </div>
+        </div>
               </CardContent>
             </Card>
 
-            {email && (
+          {email && (
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Didn't receive the email?</p>
-                <Button
-                  variant="outline"
-                  onClick={handleResendEmail}
-                  disabled={resending || resent}
+              <p className="text-sm text-muted-foreground">Didn't receive the email?</p>
+              <Button
+                variant="outline"
+                onClick={handleResendEmail}
+                disabled={resending || resent}
                   className="w-full border-2"
                   size="lg"
-                >
-                  {resending ? "Sending..." : resent ? "Email sent! Check your inbox" : "Resend confirmation email"}
-                </Button>
-              </div>
-            )}
+              >
+                {resending ? "Sending..." : resent ? "Email sent! Check your inbox" : "Resend confirmation email"}
+              </Button>
+            </div>
+          )}
 
             <div className="pt-6 border-t space-y-4">
-              <Link href="/login">
+            <Link href="/login">
                 <Button variant="ghost" className="w-full" size="lg">
-                  <ArrowLeftIcon className="mr-2 h-4 w-4" />
-                  Back to login
-                </Button>
-              </Link>
+                <ArrowLeftIcon className="mr-2 h-4 w-4" />
+                Back to login
+              </Button>
+            </Link>
 
-              <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
                 The confirmation link will expire in 24 hours. Need help?{" "}
                 <Link href="/contact" className="text-primary hover:underline font-medium">
                   Contact support
-                </Link>
-              </p>
-            </div>
+          </Link>
+        </p>
+      </div>
           </CardContent>
         </Card>
       </motion.div>
