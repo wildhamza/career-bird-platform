@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 import { EyeIcon, EyeOffIcon, MailIcon } from "lucide-react"
 import { motion } from "framer-motion"
-import { getUserRoleAction } from "./actions"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -39,22 +38,9 @@ export default function LoginPage() {
         setError(error.message)
         setLoading(false)
       } else if (data?.session && data?.user) {
-        // Check user role and redirect accordingly
-        try {
-          const role = await getUserRoleAction(data.user.id)
-          if (role === 'professor') {
-            window.location.href = "/professor/dashboard"
-          } else if (role === 'admin') {
-            window.location.href = "/admin/dashboard"
-          } else {
-            // Default to student dashboard
-            window.location.href = "/dashboard"
-          }
-        } catch (roleError) {
-          // If role check fails, default to student dashboard
-          console.error("Error checking user role:", roleError)
-          window.location.href = "/dashboard"
-        }
+        // Redirect to dashboard - middleware will handle professor redirect
+        // This avoids RLS issues with client-side queries
+        window.location.href = "/dashboard"
       }
     } catch (err) {
       // Handle any unexpected errors

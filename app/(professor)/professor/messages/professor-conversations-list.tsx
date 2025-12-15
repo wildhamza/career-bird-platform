@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Search, Plus, MessageSquare, Check } from "lucide-react"
-import { MessagesSearch } from "./messages-search"
 import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 
 interface Conversation {
@@ -17,17 +16,21 @@ interface Conversation {
   timestamp: string
   unread: number
   verified: boolean
-  active: boolean
+  online?: boolean
   otherUserId?: string
 }
 
-interface ConversationsListProps {
+interface ProfessorConversationsListProps {
   conversations: Conversation[]
   activeConversationId?: string | null
   currentUserId?: string
 }
 
-export function ConversationsList({ conversations: initialConversations, activeConversationId, currentUserId }: ConversationsListProps) {
+export function ProfessorConversationsList({ 
+  conversations: initialConversations, 
+  activeConversationId,
+  currentUserId 
+}: ProfessorConversationsListProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [conversations, setConversations] = useState<Conversation[]>(initialConversations)
   const supabase = getSupabaseBrowserClient()
@@ -37,13 +40,13 @@ export function ConversationsList({ conversations: initialConversations, activeC
     setConversations(initialConversations)
   }, [initialConversations])
 
-  // Set up real-time subscriptions
+  // Set up real-time subscriptions (same as student conversations list)
   useEffect(() => {
     if (!currentUserId) return
 
-    // Subscribe to conversation updates (when last_message_at changes)
+    // Subscribe to conversation updates
     const conversationsChannel = supabase
-      .channel("conversations-updates")
+      .channel("professor-conversations-updates")
       .on(
         "postgres_changes",
         {
@@ -54,7 +57,6 @@ export function ConversationsList({ conversations: initialConversations, activeC
         },
         async (payload) => {
           const updatedConv = payload.new as any
-          // Fetch the other participant's profile
           const otherUserId = updatedConv.participant1_id === currentUserId 
             ? updatedConv.participant2_id 
             : updatedConv.participant1_id
@@ -69,7 +71,6 @@ export function ConversationsList({ conversations: initialConversations, activeC
             const existing = prev.find(c => c.id === updatedConv.id)
             
             if (existing) {
-              // Update existing conversation and move to top
               const updated = {
                 ...existing,
                 lastMessage: updatedConv.last_message_preview || existing.lastMessage,
@@ -78,17 +79,19 @@ export function ConversationsList({ conversations: initialConversations, activeC
                   : existing.timestamp,
               }
               
-              // Remove from current position and add to top
               return [
                 updated,
                 ...prev.filter(c => c.id !== updatedConv.id),
               ]
             } else {
-              // Add new conversation to top
+              // Build name with fallbacks
+              const fullName = profile ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() : ""
+              const displayName = fullName || profile?.email || "Unknown"
+              
               return [
                 {
                   id: updatedConv.id,
-                  name: `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || "Unknown",
+                  name: displayName,
                   title: profile?.email || "",
                   lastMessage: updatedConv.last_message_preview || "No messages yet",
                   timestamp: updatedConv.last_message_at 
@@ -142,10 +145,14 @@ export function ConversationsList({ conversations: initialConversations, activeC
                 ...prev.filter(c => c.id !== updatedConv.id),
               ]
             } else {
+              // Build name with fallbacks
+              const fullName = profile ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() : ""
+              const displayName = fullName || profile?.email || "Unknown"
+              
               return [
                 {
                   id: updatedConv.id,
-                  name: `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || "Unknown",
+                  name: displayName,
                   title: profile?.email || "",
                   lastMessage: updatedConv.last_message_preview || "No messages yet",
                   timestamp: updatedConv.last_message_at 
@@ -164,9 +171,9 @@ export function ConversationsList({ conversations: initialConversations, activeC
       )
       .subscribe()
 
-    // Subscribe to new messages to update unread counts and last message
+    // Subscribe to new messages
     const messagesChannel = supabase
-      .channel("messages-updates")
+      .channel("professor-messages-updates")
       .on(
         "postgres_changes",
         {
@@ -178,7 +185,6 @@ export function ConversationsList({ conversations: initialConversations, activeC
         async (payload) => {
           const newMessage = payload.new as any
           
-          // Fetch updated conversation data
           const { data: conversation } = await supabase
             .from("conversations")
             .select("*")
@@ -200,8 +206,6 @@ export function ConversationsList({ conversations: initialConversations, activeC
               const existing = prev.find(c => c.id === conversation.id)
               
               if (existing) {
-                // If conversation is active, don't increment unread (messages are auto-read)
-                // Otherwise, increment unread count
                 const newUnread = activeConversationId === existing.id 
                   ? existing.unread 
                   : existing.unread + 1
@@ -215,16 +219,19 @@ export function ConversationsList({ conversations: initialConversations, activeC
                   unread: newUnread,
                 }
                 
-                // Move to top when new message arrives
                 return [
                   updated,
                   ...prev.filter(c => c.id !== conversation.id),
                 ]
               } else {
+                // Build name with fallbacks
+                const fullName = profile ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() : ""
+                const displayName = fullName || profile?.email || "Unknown"
+                
                 return [
                   {
                     id: conversation.id,
-                    name: `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || "Unknown",
+                    name: displayName,
                     title: profile?.email || "",
                     lastMessage: conversation.last_message_preview || "No messages yet",
                     timestamp: conversation.last_message_at 
@@ -251,7 +258,6 @@ export function ConversationsList({ conversations: initialConversations, activeC
           filter: `receiver_id=eq.${currentUserId}`,
         },
         (payload) => {
-          // When messages are marked as read, update unread count
           const updatedMessage = payload.new as any
           if (updatedMessage.is_read) {
             setConversations((prev) => {
@@ -309,7 +315,15 @@ export function ConversationsList({ conversations: initialConversations, activeC
             <Plus className="h-5 w-5 text-slate-600 dark:text-slate-300" />
           </Button>
         </div>
-        <MessagesSearch onSearchChange={setSearchQuery} />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+          <Input
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 rounded-full border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:bg-white dark:focus:bg-slate-600"
+          />
+        </div>
       </div>
 
       <div className="overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600">
@@ -318,7 +332,7 @@ export function ConversationsList({ conversations: initialConversations, activeC
             {filteredConversations.map((conversation) => (
               <Link
                 key={conversation.id}
-                href={`/messages?conversation=${conversation.id}`}
+                href={`/professor/messages?conversation=${conversation.id}`}
                 className={`block p-4 transition-all duration-200 ${
                   activeConversationId === conversation.id 
                     ? "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-l-4 border-blue-500" 
@@ -387,7 +401,7 @@ export function ConversationsList({ conversations: initialConversations, activeC
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {searchQuery
                 ? "Try adjusting your search"
-                : "Start a conversation with a professor or mentor"}
+                : "Conversations are created when students contact you or apply to your positions"}
             </p>
           </div>
         )}

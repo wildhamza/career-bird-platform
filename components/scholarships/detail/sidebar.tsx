@@ -72,10 +72,6 @@ export function ScholarshipDetailSidebar({ grant }: ScholarshipDetailSidebarProp
             <p className="text-sm font-medium text-muted-foreground">Location</p>
             <p className="font-semibold">Oxford, United Kingdom</p>
           </div>
-
-          <Button asChild variant="link" className="h-auto p-0">
-            <Link href={`/universities/${grant.universities?.id}`}>View Full Profile →</Link>
-          </Button>
         </CardContent>
       </Card>
 

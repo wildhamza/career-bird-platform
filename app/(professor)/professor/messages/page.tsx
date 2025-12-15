@@ -1,12 +1,10 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import { Phone, Video, Info, Smile, Paperclip, Send, Check, CheckCheck, MessageSquare, Plus } from "lucide-react"
-import Link from "next/link"
-import { ConversationsList } from "@/components/messages/conversations-list"
+import { Phone, Video, Info, Smile, Paperclip, Send, Check, MessageSquare } from "lucide-react"
+import { ProfessorConversationsList } from "./professor-conversations-list"
 import { MessageClient } from "@/components/messages/message-client"
 
 async function getMessagesData(conversationId?: string) {
@@ -17,7 +15,7 @@ async function getMessagesData(conversationId?: string) {
   } = await supabase.auth.getUser()
   if (!user) redirect("/login")
 
-  // Fetch conversations
+  // Fetch conversations from the conversations table
   const { data: conversations, error: convError } = await supabase
     .from("conversations")
     .select("*")
@@ -63,9 +61,16 @@ async function getMessagesData(conversationId?: string) {
     const otherUserId = conv.participant1_id === user.id ? conv.participant2_id : conv.participant1_id
     const profile = profilesMap[otherUserId]
 
+    // Build name with fallbacks
+    let displayName = "Unknown"
+    if (profile) {
+      const fullName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim()
+      displayName = fullName || profile.email || "Unknown"
+    }
+
     return {
       id: conv.id,
-      name: `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || "Unknown",
+      name: displayName,
       title: profile?.email || "",
       lastMessage: conv.last_message_preview || "No messages yet",
       timestamp: conv.last_message_at ? new Date(conv.last_message_at).toLocaleDateString() : "",
@@ -88,7 +93,21 @@ async function getMessagesData(conversationId?: string) {
     if (!convError && conversation) {
       if (conversation.participant1_id === user.id || conversation.participant2_id === user.id) {
         const otherUserId = conversation.participant1_id === user.id ? conversation.participant2_id : conversation.participant1_id
-        const profile = profilesMap[otherUserId]
+        
+        // Fetch profile for the other user if not already in profilesMap
+        let profile = profilesMap[otherUserId]
+        if (!profile) {
+          const { data: otherProfile } = await supabase
+            .from("profiles")
+            .select("user_id, first_name, last_name, email, avatar_url")
+            .eq("user_id", otherUserId)
+            .maybeSingle()
+          
+          if (otherProfile) {
+            profile = otherProfile
+            profilesMap[otherUserId] = otherProfile
+          }
+        }
 
         // Get all messages in the conversation
         const { data: messages, error: messagesError } = await supabase
@@ -126,10 +145,17 @@ async function getMessagesData(conversationId?: string) {
           .eq("receiver_id", user.id)
           .eq("is_read", false)
 
+        // Build name with fallbacks
+        let displayName = "Unknown"
+        if (profile) {
+          const fullName = `${profile.first_name || ""} ${profile.last_name || ""}`.trim()
+          displayName = fullName || profile.email || "Unknown"
+        }
+
         activeConversation = {
           id: conversationId,
           otherUserId,
-          name: `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim() || "Unknown",
+          name: displayName,
           messages: messagesWithSenders || [],
         }
       }
@@ -143,44 +169,18 @@ async function getMessagesData(conversationId?: string) {
   }
 }
 
-export default async function MessagesPage({
+export default async function ProfessorMessagesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ userId?: string; conversation?: string }>
+  searchParams: Promise<{ conversation?: string }>
 }) {
   const params = await searchParams
-  
-  // Handle userId parameter - create/get conversation and redirect
-  if (params.userId) {
-    const supabase = await getSupabaseServerClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-    
-    if (user && params.userId !== user.id) {
-      try {
-        const { data: conversationId, error } = await supabase.rpc("get_or_create_conversation", {
-          _participant1_id: user.id,
-          _participant2_id: params.userId,
-          _application_id: null,
-          _grant_id: null,
-        })
-
-        if (!error && conversationId) {
-          redirect(`/messages?conversation=${conversationId}`)
-        }
-      } catch (error) {
-        console.error("Error creating conversation:", error)
-      }
-    }
-  }
-  
   const data = await getMessagesData(params.conversation)
 
   return (
     <div className="flex h-[calc(100vh-4rem)] flex-col lg:flex-row bg-slate-50 dark:bg-slate-900">
       {/* Conversations List */}
-      <ConversationsList 
+      <ProfessorConversationsList 
         conversations={data.conversations} 
         activeConversationId={params.conversation || null}
         currentUserId={data.currentUserId}
@@ -252,7 +252,7 @@ export default async function MessagesPage({
               Select a conversation
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              Choose a conversation from the list to start messaging, or start a new conversation with a professor.
+              Choose a conversation from the list to start messaging with students.
             </p>
           </div>
         </div>

@@ -38,6 +38,7 @@ export default async function ProfessorsPage() {
     .from("profiles")
     .select(`
       id,
+      user_id,
       first_name,
       last_name,
       email,

@@ -21,44 +21,38 @@ import {
   Menu,
   LogOut,
   Settings,
-  BookMarked,
-  Users,
+  Briefcase,
   MessageSquare,
   Home,
+  Users,
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { signOut } from "@/app/(auth)/logout/actions"
 
-export function StudentNav() {
+export function ProfessorNav() {
   const pathname = usePathname()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleSignOut = async () => {
     try {
-      // Use server action for secure sign out
       await signOut()
     } catch (error) {
-      // Ignore errors - redirect anyway
       console.error("Sign out error:", error)
     } finally {
-      // Always redirect to login page
       window.location.replace("/login")
     }
   }
 
-  const studentLinks = [
+  const professorLinks = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/scholarships", label: "Scholarships", icon: GraduationCap },
-    { href: "/applications", label: "Applications", icon: FileText },
-    { href: "/professors", label: "Professors", icon: Users },
-    { href: "/messages", label: "Messages", icon: MessageSquare },
+    { href: "/professor/dashboard", label: "Dashboard", icon: GraduationCap },
+    { href: "/professor/positions", label: "Open Positions", icon: Briefcase },
+    { href: "/professor/interviews", label: "Interviews", icon: Users },
+    { href: "/professor/messages", label: "Messages", icon: MessageSquare },
   ]
 
   const isActive = (href: string) => {
     if (href === "/") {
-      return pathname === href
-    }
-    if (href === "/dashboard") {
       return pathname === href
     }
     return pathname.startsWith(href)
@@ -69,7 +63,7 @@ export function StudentNav() {
       <nav className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2 group">
+          <Link href="/professor/dashboard" className="flex items-center gap-2 group">
             <div className="h-10 w-10 group-hover:scale-110 transition-transform">
               <Image 
                 src="/logo.png" 
@@ -84,13 +78,13 @@ export function StudentNav() {
               <span className="font-bold text-lg bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 The Career Bird
               </span>
-              <p className="text-xs text-muted-foreground">Student Portal</p>
+              <p className="text-xs text-muted-foreground">Professor Portal</p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
-            {studentLinks.map((link) => {
+            {professorLinks.map((link) => {
               const Icon = link.icon
               const active = isActive(link.href)
               return (
@@ -136,13 +130,7 @@ export function StudentNav() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link href="/profile/edit" className="flex items-center w-full">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center w-full">
+                  <Link href="/professor/settings" className="flex items-center w-full">
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
                   </Link>
@@ -177,13 +165,13 @@ export function StudentNav() {
                         <User className="h-6 w-6" />
                       </div>
                       <div>
-                        <p className="font-semibold">Student Portal</p>
+                        <p className="font-semibold">Professor Portal</p>
                         <Link
-                          href="/profile/edit"
+                          href="/professor/settings"
                           className="text-sm text-blue-600 hover:underline"
                           onClick={() => setIsMobileMenuOpen(false)}
                         >
-                          View Profile
+                          View Settings
                         </Link>
                       </div>
                     </div>
@@ -191,7 +179,7 @@ export function StudentNav() {
 
                   {/* Mobile Navigation Links */}
                   <nav className="flex-1 space-y-1">
-                    {studentLinks.map((link) => {
+                    {professorLinks.map((link) => {
                       const Icon = link.icon
                       const active = isActive(link.href)
                       return (
@@ -215,7 +203,7 @@ export function StudentNav() {
 
                     {/* Settings */}
                     <Link
-                      href="/settings"
+                      href="/professor/settings"
                       onClick={() => setIsMobileMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                     >

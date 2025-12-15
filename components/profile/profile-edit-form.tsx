@@ -17,10 +17,9 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client"
 
 interface ProfileEditFormProps {
   profile: any
-  universities: Array<{ id: string; name: string; country: string }>
 }
 
-export function ProfileEditForm({ profile, universities }: ProfileEditFormProps) {
+export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
@@ -39,12 +38,38 @@ export function ProfileEditForm({ profile, universities }: ProfileEditFormProps)
   const [bio, setBio] = useState(profile?.bio || "")
 
   // Academic info
-  const [universityId, setUniversityId] = useState(profile?.university_id || "")
+  const [universityName, setUniversityName] = useState(profile?.university_name || "")
+  const [universityCountry, setUniversityCountry] = useState(profile?.university_country || "")
   const [currentDegree, setCurrentDegree] = useState(profile?.current_degree || "")
   const [fieldOfStudy, setFieldOfStudy] = useState(profile?.field_of_study || "")
   const [gpa, setGpa] = useState(profile?.gpa?.toString() || "")
   const [gpaScale, setGpaScale] = useState(profile?.gpa_scale?.toString() || "4.0")
   const [graduationYear, setGraduationYear] = useState(profile?.graduation_year?.toString() || "")
+
+  const countries = [
+    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia",
+    "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium",
+    "Benin", "Bhutan", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
+    "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Central African Republic",
+    "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba",
+    "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominican Republic", "DR Congo", "Ecuador",
+    "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Fiji", "Finland",
+    "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Guatemala", "Guinea",
+    "Guinea-Bissau", "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq",
+    "Ireland", "Israel", "Italy", "Ivory Coast", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya",
+    "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya",
+    "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali",
+    "Malta", "Marshall Islands", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia",
+    "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands",
+    "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman",
+    "Other", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Peru", "Philippines",
+    "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Samoa", "San Marino", "Saudi Arabia",
+    "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands",
+    "Somalia", "South Africa", "South Korea", "Spain", "Sri Lanka", "Sudan", "Swaziland", "Sweden",
+    "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Togo", "Tonga", "Trinidad and Tobago",
+    "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "UAE", "Uganda", "Ukraine", "United Kingdom",
+    "United States", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+  ]
 
   // Test scores
   const [greVerbal, setGreVerbal] = useState(profile?.gre_verbal?.toString() || "")
@@ -89,7 +114,8 @@ export function ProfileEditForm({ profile, universities }: ProfileEditFormProps)
       current_country: currentCountry,
       current_city: currentCity,
       bio,
-      university_id: universityId || null,
+      university_name: universityName || null,
+      university_country: universityCountry || null,
       current_degree: currentDegree || null,
       field_of_study: fieldOfStudy,
       gpa: gpa ? Number.parseFloat(gpa) : null,
@@ -251,15 +277,26 @@ export function ProfileEditForm({ profile, universities }: ProfileEditFormProps)
           {step === 3 && (
             <>
               <div className="space-y-2">
-                <Label htmlFor="university">University / Institution Name *</Label>
-                <Select value={universityId} onValueChange={setUniversityId}>
+                <Label htmlFor="university_name">University / Institution Name *</Label>
+                <Input
+                  id="university_name"
+                  value={universityName}
+                  onChange={(e) => setUniversityName(e.target.value)}
+                  placeholder="e.g., Massachusetts Institute of Technology"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="university_country">University Country *</Label>
+                <Select value={universityCountry} onValueChange={setUniversityCountry} required>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select university" />
+                    <SelectValue placeholder="Select country" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {universities.map((uni) => (
-                      <SelectItem key={uni.id} value={uni.id}>
-                        {uni.name} - {uni.country}
+                  <SelectContent className="max-h-[300px]">
+                    {countries.map((country) => (
+                      <SelectItem key={country} value={country}>
+                        {country}
                       </SelectItem>
                     ))}
                   </SelectContent>

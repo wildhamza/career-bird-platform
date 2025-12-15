@@ -93,14 +93,6 @@ export function Header({ user }: HeaderProps) {
               Applications
             </Link>
             <Link
-              href="/universities"
-              className={`text-xs sm:text-sm font-medium transition-colors hover:text-primary ${
-                isActive("/universities") ? "text-foreground" : "text-muted-foreground"
-              }`}
-            >
-              Universities
-            </Link>
-            <Link
               href="/professors"
               className={`text-xs sm:text-sm font-medium transition-colors hover:text-primary ${
                 isActive("/professors") ? "text-foreground" : "text-muted-foreground"
