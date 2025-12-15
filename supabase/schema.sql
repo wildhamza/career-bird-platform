@@ -317,6 +317,122 @@ CREATE POLICY "Professors can view tryout submissions"
   ON public.tryout_submissions FOR SELECT
   USING (public.has_role(auth.uid(), 'professor') OR public.has_role(auth.uid(), 'admin'));
 
+-- Messaging System: Conversations Table
+-- Represents a conversation between two users (student and professor)
+CREATE TABLE public.conversations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  participant1_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  participant2_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  
+  -- Optional: Link to application if conversation started from an application
+  application_id UUID REFERENCES public.applications(id) ON DELETE SET NULL,
+  grant_id UUID REFERENCES public.grants(id) ON DELETE SET NULL,
+  
+  -- Metadata
+  last_message_at TIMESTAMP WITH TIME ZONE,
+  last_message_preview TEXT,
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  
+  -- Ensure unique conversation between two users
+  UNIQUE(participant1_id, participant2_id)
+);
+
+-- Create indexes for faster lookups
+CREATE INDEX idx_conversations_participant1 ON public.conversations(participant1_id);
+CREATE INDEX idx_conversations_participant2 ON public.conversations(participant2_id);
+CREATE INDEX idx_conversations_last_message ON public.conversations(last_message_at DESC);
+
+-- Messages Table
+CREATE TABLE public.messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  conversation_id UUID REFERENCES public.conversations(id) ON DELETE CASCADE NOT NULL,
+  sender_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  receiver_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  
+  -- Message content
+  content TEXT NOT NULL,
+  message_type TEXT DEFAULT 'text', -- 'text', 'file', 'system'
+  
+  -- File attachments (optional)
+  file_url TEXT,
+  file_name TEXT,
+  file_type TEXT,
+  file_size INT,
+  
+  -- Read status
+  read_at TIMESTAMP WITH TIME ZONE,
+  is_read BOOLEAN DEFAULT false,
+  
+  -- Timestamps
+  created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+  
+  -- Constraints
+  CONSTRAINT valid_message_type CHECK (message_type IN ('text', 'file', 'system'))
+);
+
+-- Create indexes for faster queries
+CREATE INDEX idx_messages_conversation ON public.messages(conversation_id, created_at DESC);
+CREATE INDEX idx_messages_sender ON public.messages(sender_id);
+CREATE INDEX idx_messages_receiver ON public.messages(receiver_id);
+CREATE INDEX idx_messages_unread ON public.messages(receiver_id, is_read) WHERE is_read = false;
+
+-- Enable RLS for messaging tables
+ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies for Conversations
+CREATE POLICY "Users can view their own conversations"
+  ON public.conversations FOR SELECT
+  USING (auth.uid() = participant1_id OR auth.uid() = participant2_id);
+
+CREATE POLICY "Users can create conversations"
+  ON public.conversations FOR INSERT
+  WITH CHECK (
+    auth.uid() = participant1_id OR auth.uid() = participant2_id
+  );
+
+CREATE POLICY "Users can update their conversations"
+  ON public.conversations FOR UPDATE
+  USING (auth.uid() = participant1_id OR auth.uid() = participant2_id);
+
+-- RLS Policies for Messages
+CREATE POLICY "Users can view messages in their conversations"
+  ON public.messages FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.conversations c
+      WHERE c.id = conversation_id
+      AND (c.participant1_id = auth.uid() OR c.participant2_id = auth.uid())
+    )
+  );
+
+CREATE POLICY "Users can send messages"
+  ON public.messages FOR INSERT
+  WITH CHECK (
+    auth.uid() = sender_id
+    AND EXISTS (
+      SELECT 1 FROM public.conversations c
+      WHERE c.id = conversation_id
+      AND (c.participant1_id = auth.uid() OR c.participant2_id = auth.uid())
+    )
+  );
+
+CREATE POLICY "Users can update their own messages"
+  ON public.messages FOR UPDATE
+  USING (auth.uid() = sender_id);
+
+CREATE POLICY "Users can mark messages as read"
+  ON public.messages FOR UPDATE
+  USING (
+    auth.uid() = receiver_id
+    AND EXISTS (
+      SELECT 1 FROM public.conversations c
+      WHERE c.id = conversation_id
+      AND (c.participant1_id = auth.uid() OR c.participant2_id = auth.uid())
+    )
+  );
+
 -- Function to create profile on user signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
@@ -370,3 +486,95 @@ CREATE TRIGGER update_applications_updated_at
 CREATE TRIGGER update_tryout_submissions_updated_at
   BEFORE UPDATE ON public.tryout_submissions
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER update_conversations_updated_at
+  BEFORE UPDATE ON public.conversations
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Function to update conversation's last_message_at when a message is inserted
+CREATE OR REPLACE FUNCTION public.update_conversation_on_message()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE public.conversations
+  SET 
+    last_message_at = NEW.created_at,
+    last_message_preview = LEFT(NEW.content, 100),
+    updated_at = now()
+  WHERE id = NEW.conversation_id;
+  
+  RETURN NEW;
+END;
+$$;
+
+-- Trigger to update conversation when message is sent
+CREATE TRIGGER update_conversation_on_new_message
+  AFTER INSERT ON public.messages
+  FOR EACH ROW
+  EXECUTE FUNCTION public.update_conversation_on_message();
+
+-- Function to get or create a conversation between two users
+CREATE OR REPLACE FUNCTION public.get_or_create_conversation(
+  _participant1_id UUID,
+  _participant2_id UUID,
+  _application_id UUID DEFAULT NULL,
+  _grant_id UUID DEFAULT NULL
+)
+RETURNS UUID
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  _conversation_id UUID;
+  _smaller_id UUID;
+  _larger_id UUID;
+BEGIN
+  -- Ensure consistent ordering (smaller UUID first)
+  IF _participant1_id < _participant2_id THEN
+    _smaller_id := _participant1_id;
+    _larger_id := _participant2_id;
+  ELSE
+    _smaller_id := _participant2_id;
+    _larger_id := _participant1_id;
+  END IF;
+  
+  -- Try to find existing conversation
+  SELECT id INTO _conversation_id
+  FROM public.conversations
+  WHERE participant1_id = _smaller_id
+    AND participant2_id = _larger_id
+  LIMIT 1;
+  
+  -- If not found, create new conversation
+  IF _conversation_id IS NULL THEN
+    INSERT INTO public.conversations (participant1_id, participant2_id, application_id, grant_id)
+    VALUES (_smaller_id, _larger_id, _application_id, _grant_id)
+    RETURNING id INTO _conversation_id;
+  END IF;
+  
+  RETURN _conversation_id;
+END;
+$$;
+
+-- Function to get unread message count for a user
+CREATE OR REPLACE FUNCTION public.get_unread_count(_user_id UUID)
+RETURNS INTEGER
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT COUNT(*)
+  FROM public.messages m
+  INNER JOIN public.conversations c ON c.id = m.conversation_id
+  WHERE m.receiver_id = _user_id
+    AND m.is_read = false
+    AND (c.participant1_id = _user_id OR c.participant2_id = _user_id);
+$$;
+
+-- Note: To enable Realtime for messaging, go to Supabase Dashboard > Database > Replication
+-- and enable replication for 'messages' and 'conversations' tables

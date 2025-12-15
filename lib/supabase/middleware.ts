@@ -37,6 +37,32 @@ export async function updateSession(request: NextRequest) {
 
   // Redirect authenticated users away from auth pages
   if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/signup")) {
+    // First, try to get ALL roles from user_roles table (user might have multiple)
+    const { data: allRoles, error: roleError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", user.id)
+
+    // Check if user has professor role
+    const hasProfessorRole = allRoles?.some(r => r.role === "professor")
+
+    if (hasProfessorRole) {
+      return NextResponse.redirect(new URL("/professor/dashboard", request.url))
+    }
+
+    // Fallback: Check if user has a department (professor indicator)
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("department")
+      .eq("user_id", user.id)
+      .maybeSingle()
+
+    // If profile has department, user is a professor
+    if (profile?.department) {
+      return NextResponse.redirect(new URL("/professor/dashboard", request.url))
+    }
+    
+    // Default to student dashboard
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 

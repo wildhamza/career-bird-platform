@@ -14,6 +14,7 @@ import { StaggerContainer, StaggerItem } from "@/components/animations/stagger-c
 
 interface Professor {
   id: string
+  user_id: string
   first_name: string
   last_name: string
   email: string
@@ -282,7 +283,7 @@ export function ProfessorsClient({ professors }: ProfessorsClientProps) {
 
                         {/* Contact */}
                         <Button className="w-full gap-2" asChild>
-                          <Link href={`mailto:${professor.email}`}>
+                          <Link href={`/messages?userId=${professor.user_id}`}>
                             <Mail className="h-4 w-4" />
                             Contact Professor
                           </Link>

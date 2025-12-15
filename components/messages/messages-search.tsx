@@ -19,10 +19,10 @@ export function MessagesSearch({ onSearchChange }: MessagesSearchProps) {
 
   return (
     <div className="relative">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
       <Input
-        placeholder="Search students or mentors..."
-        className="pl-9 w-full"
+        placeholder="Search conversations..."
+        className="pl-9 w-full rounded-full border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 focus:bg-white dark:focus:bg-slate-600 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
         value={searchQuery}
         onChange={handleChange}
       />

@@ -34,12 +34,48 @@ export default async function StudentDashboard() {
     redirect("/login")
   }
 
-  // Fetch user profile with error handling
+  // Check if user is a professor and redirect them
+  // First, try to get ALL roles from user_roles table
+  const { data: allRoles, error: roleError } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+
+  console.log("🔍 Dashboard role check:", { 
+    userId: user.id, 
+    allRoles, 
+    roleError,
+    hasRoles: !!allRoles,
+    roleCount: allRoles?.length 
+  })
+
+  // Check if user has professor role
+  const hasProfessorRole = allRoles?.some(r => r.role === "professor")
+
+  if (hasProfessorRole) {
+    console.log("✅ Professor role found, redirecting to professor dashboard")
+    redirect("/professor/dashboard")
+  }
+
+  // Fetch user profile (we'll use this for both role check and display)
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", user.id)
     .single()
+
+  console.log("🔍 Dashboard profile check:", { 
+    profile: profile ? { hasDepartment: !!profile.department, department: profile.department } : null, 
+    profileError,
+    hasDepartment: !!profile?.department,
+    department: profile?.department 
+  })
+
+  // Check if user has a department (professor indicator)
+  if (profile?.department) {
+    console.log("✅ Department found in profile, redirecting to professor dashboard")
+    redirect("/professor/dashboard")
+  }
 
   // Fetch applications with error handling
   const { data: applications, error: applicationsError } = await supabase
